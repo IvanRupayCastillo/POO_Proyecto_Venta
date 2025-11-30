@@ -1,0 +1,433 @@
+CREATE DATABASE `sistema_ventas_almacen` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+-- sistema_ventas_almacen.clientes definition
+CREATE TABLE `clientes` (
+  `id_cliente` int NOT NULL AUTO_INCREMENT,
+  `tipo_documento` enum('DNI','RUC','CE','PASAPORTE') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `numero_documento` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `razon_social` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `direccion` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `telefono` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `activo` tinyint(1) DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_cliente`),
+  UNIQUE KEY `uk_numero_documento` (`numero_documento`),
+  KEY `idx_tipo_documento` (`tipo_documento`,`numero_documento`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- sistema_ventas_almacen.colores definition
+
+CREATE TABLE `colores` (
+  `id_color` int NOT NULL AUTO_INCREMENT,
+  `codigo_color` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nombre_color` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `activo` tinyint(1) DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_color`),
+  UNIQUE KEY `uk_codigo_color` (`codigo_color`),
+  KEY `idx_activo` (`activo`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- sistema_ventas_almacen.tallas definition
+
+CREATE TABLE `tallas` (
+  `id_talla` int NOT NULL AUTO_INCREMENT,
+  `tipo_talla` enum('NUMERICA','LETRAS','ESPECIAL') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nombre_talla` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `orden_visualizacion` int DEFAULT '0',
+  `activo` tinyint(1) DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_talla`),
+  KEY `idx_tipo_activo` (`tipo_talla`,`activo`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- sistema_ventas_almacen.tiendas definition
+
+CREATE TABLE `tiendas` (
+  `id_tienda` int NOT NULL AUTO_INCREMENT,
+  `codigo_tienda` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nombre_tienda` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tipo_tienda` enum('TIENDA','ALMACEN_PRINCIPAL','DEPOSITO') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `direccion` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `telefono` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `es_punto_venta` tinyint(1) DEFAULT '1',
+  `activo` tinyint(1) DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_tienda`),
+  UNIQUE KEY `uk_codigo_tienda` (`codigo_tienda`),
+  KEY `idx_tipo_activo` (`tipo_tienda`,`activo`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- sistema_ventas_almacen.tipos_movimiento definition
+
+CREATE TABLE `tipos_movimiento` (
+  `id_tipo_movimiento` int NOT NULL AUTO_INCREMENT,
+  `codigo_tipo` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nombre_tipo` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `afecta_stock` enum('ENTRADA','SALIDA','NEUTRO') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `requiere_autorizacion` tinyint(1) DEFAULT '0',
+  `descripcion` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `activo` tinyint(1) DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_tipo_movimiento`),
+  UNIQUE KEY `uk_codigo_tipo` (`codigo_tipo`),
+  KEY `idx_activo` (`activo`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- sistema_ventas_almacen.tipos_producto definition
+
+CREATE TABLE `tipos_producto` (
+  `id_tipo` int NOT NULL AUTO_INCREMENT,
+  `codigo_tipo` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nombre_tipo` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `descripcion` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `activo` tinyint(1) DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_tipo`),
+  UNIQUE KEY `uk_codigo_tipo` (`codigo_tipo`),
+  KEY `idx_activo` (`activo`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- sistema_ventas_almacen.productos definition
+
+CREATE TABLE `productos` (
+  `id_producto` int NOT NULL AUTO_INCREMENT,
+  `codigo_producto` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nombre_producto` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `descripcion` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `id_tipo` int NOT NULL,
+  `id_color` int NOT NULL,
+  `id_talla` int NOT NULL,
+  `precio_compra` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `precio_venta_mayor` decimal(10,2) NOT NULL,
+  `precio_venta_menor` decimal(10,2) NOT NULL,
+  `stock_minimo` int DEFAULT '5',
+  `activo` tinyint(1) DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_producto`),
+  UNIQUE KEY `uk_codigo_producto` (`codigo_producto`),
+  UNIQUE KEY `uk_producto_completo` (`id_tipo`,`nombre_producto`,`id_color`,`id_talla`),
+  KEY `idx_tipo` (`id_tipo`),
+  KEY `idx_activo` (`activo`),
+  KEY `fk_productos_color` (`id_color`),
+  KEY `fk_productos_talla` (`id_talla`),
+  KEY `idx_productos_tipo_activo` (`id_tipo`,`activo`),
+  CONSTRAINT `fk_productos_color` FOREIGN KEY (`id_color`) REFERENCES `colores` (`id_color`),
+  CONSTRAINT `fk_productos_talla` FOREIGN KEY (`id_talla`) REFERENCES `tallas` (`id_talla`),
+  CONSTRAINT `fk_productos_tipo` FOREIGN KEY (`id_tipo`) REFERENCES `tipos_producto` (`id_tipo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- sistema_ventas_almacen.usuarios definition
+
+CREATE TABLE `usuarios` (
+  `id_usuario` int NOT NULL AUTO_INCREMENT,
+  `codigo_usuario` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nombre_completo` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `password_hash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `rol` enum('ADMIN','GERENTE','VENDEDOR','ALMACENERO','SUPERVISOR') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id_tienda_asignada` int DEFAULT NULL,
+  `activo` tinyint(1) DEFAULT '1',
+  `ultimo_acceso` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_usuario`),
+  UNIQUE KEY `uk_codigo_usuario` (`codigo_usuario`),
+  UNIQUE KEY `uk_email` (`email`),
+  KEY `idx_rol` (`rol`),
+  KEY `idx_activo` (`activo`),
+  KEY `fk_tienda_asignada` (`id_tienda_asignada`),
+  CONSTRAINT `fk_usuarios_tienda` FOREIGN KEY (`id_tienda_asignada`) REFERENCES `tiendas` (`id_tienda`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- sistema_ventas_almacen.comprobantes_venta definition
+
+CREATE TABLE `comprobantes_venta` (
+  `id_venta` int NOT NULL AUTO_INCREMENT,
+  `tipo_comprobante` enum('BOLETA','FACTURA','TICKET') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `serie_comprobante` varchar(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `numero_comprobante` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fecha_venta` date NOT NULL,
+  `hora_venta` time NOT NULL,
+  `id_tienda` int NOT NULL,
+  `id_cliente` int DEFAULT NULL,
+  `id_usuario_vendedor` int NOT NULL,
+  `subtotal` decimal(12,2) NOT NULL,
+  `descuento` decimal(12,2) DEFAULT '0.00',
+  `igv` decimal(12,2) NOT NULL,
+  `total` decimal(12,2) NOT NULL,
+  `metodo_pago` enum('EFECTIVO','TARJETA','TRANSFERENCIA','MIXTO') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'EFECTIVO',
+  `estado` enum('EMITIDA','ANULADA') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'EMITIDA',
+  `observaciones` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_venta`),
+  UNIQUE KEY `uk_comprobante` (`tipo_comprobante`,`serie_comprobante`,`numero_comprobante`),
+  KEY `idx_fecha` (`fecha_venta`),
+  KEY `idx_tienda_fecha` (`id_tienda`,`fecha_venta`),
+  KEY `idx_estado` (`estado`),
+  KEY `fk_venta_cliente` (`id_cliente`),
+  KEY `fk_venta_vendedor` (`id_usuario_vendedor`),
+  KEY `idx_ventas_tienda_fecha` (`id_tienda`,`fecha_venta`,`estado`),
+  CONSTRAINT `fk_venta_cliente` FOREIGN KEY (`id_cliente`) REFERENCES `clientes` (`id_cliente`),
+  CONSTRAINT `fk_venta_tienda` FOREIGN KEY (`id_tienda`) REFERENCES `tiendas` (`id_tienda`),
+  CONSTRAINT `fk_venta_vendedor` FOREIGN KEY (`id_usuario_vendedor`) REFERENCES `usuarios` (`id_usuario`),
+  CONSTRAINT `chk_descuento` CHECK ((`descuento` >= 0)),
+  CONSTRAINT `chk_subtotal` CHECK ((`subtotal` >= 0)),
+  CONSTRAINT `chk_total` CHECK ((`total` >= 0))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- sistema_ventas_almacen.detalle_venta definition
+
+CREATE TABLE `detalle_venta` (
+  `id_detalle_venta` int NOT NULL AUTO_INCREMENT,
+  `id_venta` int NOT NULL,
+  `id_producto` int NOT NULL,
+  `cantidad` int NOT NULL,
+  `precio_unitario` decimal(10,2) NOT NULL,
+  `descuento_item` decimal(10,2) DEFAULT '0.00',
+  `subtotal` decimal(12,2) GENERATED ALWAYS AS (((`cantidad` * `precio_unitario`) - `descuento_item`)) STORED,
+  PRIMARY KEY (`id_detalle_venta`),
+  KEY `idx_venta` (`id_venta`),
+  KEY `idx_producto` (`id_producto`),
+  CONSTRAINT `fk_detventa_producto` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`),
+  CONSTRAINT `fk_detventa_venta` FOREIGN KEY (`id_venta`) REFERENCES `comprobantes_venta` (`id_venta`) ON DELETE CASCADE,
+  CONSTRAINT `chk_cantidad_venta` CHECK ((`cantidad` > 0)),
+  CONSTRAINT `chk_precio_unitario` CHECK ((`precio_unitario` > 0))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- sistema_ventas_almacen.guias_transferencia definition
+
+CREATE TABLE `guias_transferencia` (
+  `id_guia` int NOT NULL AUTO_INCREMENT,
+  `numero_guia` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fecha_emision` date NOT NULL,
+  `hora_emision` time NOT NULL,
+  `id_tienda_origen` int NOT NULL,
+  `id_tienda_destino` int NOT NULL,
+  `id_usuario_emite` int NOT NULL,
+  `id_usuario_recibe` int DEFAULT NULL,
+  `fecha_recepcion` timestamp NULL DEFAULT NULL,
+  `estado` enum('EMITIDA','EN_TRANSITO','RECIBIDA','ANULADA') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'EMITIDA',
+  `observaciones` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_guia`),
+  UNIQUE KEY `uk_numero_guia` (`numero_guia`),
+  KEY `idx_fecha` (`fecha_emision`),
+  KEY `idx_origen` (`id_tienda_origen`),
+  KEY `idx_destino` (`id_tienda_destino`),
+  KEY `idx_estado` (`estado`),
+  KEY `fk_guia_emite` (`id_usuario_emite`),
+  KEY `fk_guia_recibe` (`id_usuario_recibe`),
+  CONSTRAINT `fk_guia_destino` FOREIGN KEY (`id_tienda_destino`) REFERENCES `tiendas` (`id_tienda`),
+  CONSTRAINT `fk_guia_emite` FOREIGN KEY (`id_usuario_emite`) REFERENCES `usuarios` (`id_usuario`),
+  CONSTRAINT `fk_guia_origen` FOREIGN KEY (`id_tienda_origen`) REFERENCES `tiendas` (`id_tienda`),
+  CONSTRAINT `fk_guia_recibe` FOREIGN KEY (`id_usuario_recibe`) REFERENCES `usuarios` (`id_usuario`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- sistema_ventas_almacen.inventario definition
+
+CREATE TABLE `inventario` (
+  `id_inventario` int NOT NULL AUTO_INCREMENT,
+  `id_tienda` int NOT NULL,
+  `id_producto` int NOT NULL,
+  `stock_actual` int NOT NULL DEFAULT '0',
+  `stock_reservado` int NOT NULL DEFAULT '0',
+  `stock_disponible` int GENERATED ALWAYS AS ((`stock_actual` - `stock_reservado`)) STORED,
+  `ultima_actualizacion` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_inventario`),
+  UNIQUE KEY `uk_inventario` (`id_tienda`,`id_producto`),
+  KEY `idx_tienda` (`id_tienda`),
+  KEY `idx_producto` (`id_producto`),
+  CONSTRAINT `fk_inventario_producto` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`) ON DELETE CASCADE,
+  CONSTRAINT `fk_inventario_tienda` FOREIGN KEY (`id_tienda`) REFERENCES `tiendas` (`id_tienda`) ON DELETE CASCADE,
+  CONSTRAINT `chk_stock_actual` CHECK ((`stock_actual` >= 0)),
+  CONSTRAINT `chk_stock_reservado` CHECK ((`stock_reservado` >= 0))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- sistema_ventas_almacen.inventarios_fisicos definition
+
+CREATE TABLE `inventarios_fisicos` (
+  `id_inventario_fisico` int NOT NULL AUTO_INCREMENT,
+  `numero_inventario` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fecha_inventario` date NOT NULL,
+  `id_tienda` int NOT NULL,
+  `id_usuario_responsable` int NOT NULL,
+  `estado` enum('EN_PROCESO','FINALIZADO','AJUSTADO','ANULADO') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'EN_PROCESO',
+  `observaciones` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_inventario_fisico`),
+  UNIQUE KEY `uk_numero_inventario` (`numero_inventario`),
+  KEY `idx_fecha` (`fecha_inventario`),
+  KEY `idx_tienda` (`id_tienda`),
+  KEY `idx_estado` (`estado`),
+  KEY `fk_invfis_responsable` (`id_usuario_responsable`),
+  CONSTRAINT `fk_invfis_responsable` FOREIGN KEY (`id_usuario_responsable`) REFERENCES `usuarios` (`id_usuario`),
+  CONSTRAINT `fk_invfis_tienda` FOREIGN KEY (`id_tienda`) REFERENCES `tiendas` (`id_tienda`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- sistema_ventas_almacen.movimientos_almacen_cabecera definition
+
+CREATE TABLE `movimientos_almacen_cabecera` (
+  `id_movimiento` int NOT NULL AUTO_INCREMENT,
+  `numero_documento` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id_tipo_movimiento` int NOT NULL,
+  `id_tienda_origen` int NOT NULL,
+  `id_tienda_destino` int DEFAULT NULL,
+  `fecha_movimiento` date NOT NULL,
+  `hora_movimiento` time NOT NULL,
+  `id_usuario_registro` int NOT NULL,
+  `id_usuario_autorizacion` int DEFAULT NULL,
+  `fecha_autorizacion` timestamp NULL DEFAULT NULL,
+  `estado` enum('PENDIENTE','AUTORIZADO','CONFIRMADO','ANULADO') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'PENDIENTE',
+  `observaciones` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `monto_total` decimal(12,2) DEFAULT '0.00',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_movimiento`),
+  KEY `idx_numero_doc` (`numero_documento`),
+  KEY `idx_fecha` (`fecha_movimiento`),
+  KEY `idx_estado` (`estado`),
+  KEY `idx_tipo` (`id_tipo_movimiento`),
+  KEY `fk_mov_tienda_destino` (`id_tienda_destino`),
+  KEY `fk_mov_usuario_registro` (`id_usuario_registro`),
+  KEY `fk_mov_usuario_autorizacion` (`id_usuario_autorizacion`),
+  KEY `idx_movimientos_tienda_fecha` (`id_tienda_origen`,`fecha_movimiento`,`estado`),
+  CONSTRAINT `fk_mov_tienda_destino` FOREIGN KEY (`id_tienda_destino`) REFERENCES `tiendas` (`id_tienda`),
+  CONSTRAINT `fk_mov_tienda_origen` FOREIGN KEY (`id_tienda_origen`) REFERENCES `tiendas` (`id_tienda`),
+  CONSTRAINT `fk_mov_tipo` FOREIGN KEY (`id_tipo_movimiento`) REFERENCES `tipos_movimiento` (`id_tipo_movimiento`),
+  CONSTRAINT `fk_mov_usuario_autorizacion` FOREIGN KEY (`id_usuario_autorizacion`) REFERENCES `usuarios` (`id_usuario`),
+  CONSTRAINT `fk_mov_usuario_registro` FOREIGN KEY (`id_usuario_registro`) REFERENCES `usuarios` (`id_usuario`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- sistema_ventas_almacen.movimientos_almacen_detalle definition
+
+CREATE TABLE `movimientos_almacen_detalle` (
+  `id_detalle` int NOT NULL AUTO_INCREMENT,
+  `id_movimiento` int NOT NULL,
+  `id_producto` int NOT NULL,
+  `cantidad` int NOT NULL,
+  `precio_unitario` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `subtotal` decimal(12,2) GENERATED ALWAYS AS ((`cantidad` * `precio_unitario`)) STORED,
+  `stock_anterior` int DEFAULT NULL,
+  `stock_nuevo` int DEFAULT NULL,
+  `observaciones` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id_detalle`),
+  KEY `idx_movimiento` (`id_movimiento`),
+  KEY `idx_producto` (`id_producto`),
+  CONSTRAINT `fk_movdet_movimiento` FOREIGN KEY (`id_movimiento`) REFERENCES `movimientos_almacen_cabecera` (`id_movimiento`) ON DELETE CASCADE,
+  CONSTRAINT `fk_movdet_producto` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`),
+  CONSTRAINT `chk_cantidad` CHECK ((`cantidad` > 0))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- sistema_ventas_almacen.solicitudes_reposicion definition
+
+CREATE TABLE `solicitudes_reposicion` (
+  `id_solicitud` int NOT NULL AUTO_INCREMENT,
+  `numero_solicitud` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fecha_solicitud` date NOT NULL,
+  `id_tienda_solicitante` int NOT NULL,
+  `id_tienda_proveedora` int NOT NULL,
+  `id_usuario_solicita` int NOT NULL,
+  `id_usuario_autoriza` int DEFAULT NULL,
+  `fecha_autorizacion` timestamp NULL DEFAULT NULL,
+  `estado` enum('PENDIENTE','APROBADA','RECHAZADA','PROCESADA','ANULADA') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'PENDIENTE',
+  `prioridad` enum('BAJA','MEDIA','ALTA','URGENTE') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'MEDIA',
+  `observaciones` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_solicitud`),
+  UNIQUE KEY `uk_numero_solicitud` (`numero_solicitud`),
+  KEY `idx_fecha` (`fecha_solicitud`),
+  KEY `idx_solicitante` (`id_tienda_solicitante`),
+  KEY `idx_estado` (`estado`),
+  KEY `fk_sol_proveedora` (`id_tienda_proveedora`),
+  KEY `fk_sol_usuario_solicita` (`id_usuario_solicita`),
+  KEY `fk_sol_usuario_autoriza` (`id_usuario_autoriza`),
+  CONSTRAINT `fk_sol_proveedora` FOREIGN KEY (`id_tienda_proveedora`) REFERENCES `tiendas` (`id_tienda`),
+  CONSTRAINT `fk_sol_solicitante` FOREIGN KEY (`id_tienda_solicitante`) REFERENCES `tiendas` (`id_tienda`),
+  CONSTRAINT `fk_sol_usuario_autoriza` FOREIGN KEY (`id_usuario_autoriza`) REFERENCES `usuarios` (`id_usuario`),
+  CONSTRAINT `fk_sol_usuario_solicita` FOREIGN KEY (`id_usuario_solicita`) REFERENCES `usuarios` (`id_usuario`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- sistema_ventas_almacen.detalle_guia_transferencia definition
+
+CREATE TABLE `detalle_guia_transferencia` (
+  `id_detalle_guia` int NOT NULL AUTO_INCREMENT,
+  `id_guia` int NOT NULL,
+  `id_producto` int NOT NULL,
+  `cantidad_enviada` int NOT NULL,
+  `cantidad_recibida` int DEFAULT NULL,
+  `observaciones` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id_detalle_guia`),
+  KEY `idx_guia` (`id_guia`),
+  KEY `idx_producto` (`id_producto`),
+  CONSTRAINT `fk_detguia_guia` FOREIGN KEY (`id_guia`) REFERENCES `guias_transferencia` (`id_guia`) ON DELETE CASCADE,
+  CONSTRAINT `fk_detguia_producto` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`),
+  CONSTRAINT `chk_cantidad_enviada` CHECK ((`cantidad_enviada` > 0))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- sistema_ventas_almacen.detalle_inventario_fisico definition
+
+CREATE TABLE `detalle_inventario_fisico` (
+  `id_detalle_inventario` int NOT NULL AUTO_INCREMENT,
+  `id_inventario_fisico` int NOT NULL,
+  `id_producto` int NOT NULL,
+  `stock_sistema` int NOT NULL,
+  `stock_fisico` int NOT NULL,
+  `diferencia` int GENERATED ALWAYS AS ((`stock_fisico` - `stock_sistema`)) STORED,
+  `tipo_diferencia` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci GENERATED ALWAYS AS ((case when ((`stock_fisico` - `stock_sistema`) > 0) then _utf8mb4'SOBRANTE' when ((`stock_fisico` - `stock_sistema`) < 0) then _utf8mb4'FALTANTE' else _utf8mb4'NINGUNA' end)) STORED,
+  `valor_diferencia` decimal(12,2) DEFAULT NULL,
+  `observaciones` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id_detalle_inventario`),
+  UNIQUE KEY `uk_inventario_producto` (`id_inventario_fisico`,`id_producto`),
+  KEY `idx_inventario` (`id_inventario_fisico`),
+  KEY `idx_producto` (`id_producto`),
+  CONSTRAINT `fk_detinvfis_inventario` FOREIGN KEY (`id_inventario_fisico`) REFERENCES `inventarios_fisicos` (`id_inventario_fisico`) ON DELETE CASCADE,
+  CONSTRAINT `fk_detinvfis_producto` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- sistema_ventas_almacen.detalle_solicitud_reposicion definition
+
+CREATE TABLE `detalle_solicitud_reposicion` (
+  `id_detalle_solicitud` int NOT NULL AUTO_INCREMENT,
+  `id_solicitud` int NOT NULL,
+  `id_producto` int NOT NULL,
+  `cantidad_solicitada` int NOT NULL,
+  `cantidad_aprobada` int DEFAULT NULL,
+  `observaciones` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id_detalle_solicitud`),
+  KEY `idx_solicitud` (`id_solicitud`),
+  KEY `idx_producto` (`id_producto`),
+  CONSTRAINT `fk_detsol_producto` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`),
+  CONSTRAINT `fk_detsol_solicitud` FOREIGN KEY (`id_solicitud`) REFERENCES `solicitudes_reposicion` (`id_solicitud`) ON DELETE CASCADE,
+  CONSTRAINT `chk_cantidad_solicitada` CHECK ((`cantidad_solicitada` > 0))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
