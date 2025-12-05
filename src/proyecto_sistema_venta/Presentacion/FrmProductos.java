@@ -8,8 +8,10 @@ import proyecto_sistema_venta.Entidades.TipoProducto;
 import proyecto_sistema_venta.Entidades.Color;
 import proyecto_sistema_venta.Entidades.Talla;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import java.util.List;
+import java.util.ArrayList;
 
 public class FrmProductos extends javax.swing.JInternalFrame {
 
@@ -50,29 +52,32 @@ public class FrmProductos extends javax.swing.JInternalFrame {
             // Cargar Tipos de Producto
             CmbTipo.removeAllItems();
             listaTipos = TIPO_CONTROL.seleccionar();
-            if (listaTipos != null && !listaTipos.isEmpty()) {
+            if (listaTipos == null) listaTipos = new ArrayList<>();
+            if (!listaTipos.isEmpty()) {
                 for (TipoProducto tipo : listaTipos) {
                     CmbTipo.addItem(tipo.getNombreTipo());
                 }
             } else {
                 CmbTipo.addItem("Sin tipos disponibles");
             }
-            
+
             // Cargar Colores
             CmbColor.removeAllItems();
             listaColores = COLOR_CONTROL.seleccionar();
-            if (listaColores != null && !listaColores.isEmpty()) {
+            if (listaColores == null) listaColores = new ArrayList<>();
+            if (!listaColores.isEmpty()) {
                 for (Color color : listaColores) {
                     CmbColor.addItem(color.getNombreColor());
                 }
             } else {
                 CmbColor.addItem("Sin colores disponibles");
             }
-            
+
             // Cargar Tallas
             CmbTalla.removeAllItems();
             listaTallas = TALLA_CONTROL.seleccionar();
-            if (listaTallas != null && !listaTallas.isEmpty()) {
+            if (listaTallas == null) listaTallas = new ArrayList<>();
+            if (!listaTallas.isEmpty()) {
                 for (Talla talla : listaTallas) {
                     CmbTalla.addItem(talla.getNombreTalla());
                 }
@@ -112,7 +117,7 @@ public class FrmProductos extends javax.swing.JInternalFrame {
 
     private void listar(String texto) {
         TblDatos.setModel(this.CONTROL.listar(texto));
-        TableRowSorter orden = new TableRowSorter(TblDatos.getModel());
+        TableRowSorter<DefaultTableModel> orden = new TableRowSorter<>((DefaultTableModel) TblDatos.getModel());
         TblDatos.setRowSorter(orden);
         this.ocultarColumnas();
         LblTotalRegistros.setText("Total de registros: " + this.CONTROL.total());
@@ -156,8 +161,7 @@ public class FrmProductos extends javax.swing.JInternalFrame {
         BtnAnular.setVisible(!valor);
     }
 
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
 
         TabGeneral = new javax.swing.JTabbedPane();
@@ -465,7 +469,7 @@ public class FrmProductos extends javax.swing.JInternalFrame {
         this.accion = "guardar";
     }                                        
 
-    private void BtnGuardarActionPerformed(java.awt.event.ActionEvent evt) {                                           
+    private void BtnGuardarActionPerformed(java.awt.event.ActionEvent evt) {
         if (TxtCodigo.getText().length() == 0) {
             JOptionPane.showMessageDialog(this, "Debe ingresar un código", "Sistema", JOptionPane.WARNING_MESSAGE);
             TxtCodigo.requestFocus();
@@ -476,16 +480,16 @@ public class FrmProductos extends javax.swing.JInternalFrame {
             TxtNombre.requestFocus();
             return;
         }
-        if (CmbTipo.getSelectedIndex() == -1) {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar un tipo", "Sistema", JOptionPane.WARNING_MESSAGE);
+        if (CmbTipo.getSelectedIndex() == -1 || CmbTipo.getSelectedItem().equals("Sin tipos disponibles")) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un tipo válido", "Sistema", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        if (CmbColor.getSelectedIndex() == -1) {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar un color", "Sistema", JOptionPane.WARNING_MESSAGE);
+        if (CmbColor.getSelectedIndex() == -1 || CmbColor.getSelectedItem().equals("Sin colores disponibles")) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un color válido", "Sistema", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        if (CmbTalla.getSelectedIndex() == -1) {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar una talla", "Sistema", JOptionPane.WARNING_MESSAGE);
+        if (CmbTalla.getSelectedIndex() == -1 || CmbTalla.getSelectedItem().equals("Sin tallas disponibles")) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar una talla válida", "Sistema", JOptionPane.WARNING_MESSAGE);
             return;
         }
 

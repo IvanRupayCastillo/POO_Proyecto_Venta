@@ -18,7 +18,6 @@ public class FrmKardex extends javax.swing.JInternalFrame {
         cargarKardex();
     }
 
-    @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -174,8 +173,13 @@ public class FrmKardex extends javax.swing.JInternalFrame {
 
     private void tblKardexMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblKardexMouseClicked
         if (evt.getClickCount() == 2 && tblKardex.getSelectedRow() != -1) {
-            int idMovimiento = (int) tblKardex.getValueAt(tblKardex.getSelectedRow(), 0);
-            mostrarDetalle(idMovimiento);
+            Object value = tblKardex.getValueAt(tblKardex.getSelectedRow(), 0);
+            if (value instanceof Integer) {
+                int idMovimiento = (Integer) value;
+                mostrarDetalle(idMovimiento);
+            } else {
+                JOptionPane.showMessageDialog(this, "Error: El ID del movimiento no es válido.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }//GEN-LAST:event_tblKardexMouseClicked
 

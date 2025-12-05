@@ -1,0 +1,15 @@
+<venta id="10">
+  <comprobante tipo="Boleta" serie="1" numero="12"/>
+  <fecha>2025-12-05</fecha>
+  <hora>03:23:09.088116500</hora>
+  <idTienda>1</idTienda>
+  <idVendedor>1</idVendedor>
+  <subtotal>2998.0</subtotal>
+  <descuento>0.0</descuento>
+  <igv>539.64</igv>
+  <total>3537.64</total>
+  <metodoPago>EFECTIVO</metodoPago>
+  <detalles>
+    <detalle idProducto="2" cantidad="10" precioUnitario="300.0" descuentoItem="2.0"/>
+  </detalles>
+</venta>

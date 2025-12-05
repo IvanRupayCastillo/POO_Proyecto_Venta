@@ -2,6 +2,7 @@ package proyecto_sistema_venta.Presentacion;
 
 import proyecto_sistema_venta.Negocio.TallaNegocio;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
 public class FrmTalla extends javax.swing.JInternalFrame {
@@ -27,7 +28,7 @@ public class FrmTalla extends javax.swing.JInternalFrame {
 
     private void listar(String texto) {
         TblDatos.setModel(this.CONTROL.listar(texto));
-        TableRowSorter orden = new TableRowSorter(TblDatos.getModel());
+        TableRowSorter<DefaultTableModel> orden = new TableRowSorter<>((DefaultTableModel) TblDatos.getModel());
         TblDatos.setRowSorter(orden);
         this.ocultarColumnas();
         LblTotalRegistros.setText("Total de registros: " + this.CONTROL.total());
@@ -57,8 +58,7 @@ public class FrmTalla extends javax.swing.JInternalFrame {
         BtnAnular.setVisible(!valor);
     }
 
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
 
         TabGeneral = new javax.swing.JTabbedPane();
@@ -340,7 +340,8 @@ public class FrmTalla extends javax.swing.JInternalFrame {
                 CmbTipo.getSelectedItem().toString(),
                 TxtNombre.getText(),
                 orden,
-                ChkActivo.isSelected()
+                ChkActivo.isSelected(),
+                this.nombreAnt
             );
             if (resp.equals("OK")) {
                 this.limpiar();

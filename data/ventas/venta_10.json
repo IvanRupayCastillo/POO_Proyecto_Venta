@@ -1,0 +1,25 @@
+{
+  "idVenta": 10,
+  "comprobante": {
+    "tipo": "Boleta",
+    "serie": "1",
+    "numero": "12"
+  },
+  "fecha": "2025-12-05",
+  "hora": "03:23:09.088116500",
+  "idTienda": 1,
+  "idVendedor": 1,
+  "subtotal": 2998.0,
+  "descuento": 0.0,
+  "igv": 539.64,
+  "total": 3537.64,
+  "metodoPago": "EFECTIVO",
+  "detalles": [
+    {
+      "idProducto": 2,
+      "cantidad": 10,
+      "precioUnitario": 300.0,
+      "descuentoItem": 2.0
+    }
+  ]
+}

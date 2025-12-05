@@ -33,6 +33,13 @@ public class FrmRegistrarVenta extends JInternalFrame {
         productoNegocio = new ProductoNegocio();
         ventaNegocio = new VentaNegocio();
         detallesVenta = new ArrayList<>();
+
+        // Inicializar sesión por defecto si no hay una activa
+        SessionManager sessionManager = SessionManager.getInstance();
+        if (!sessionManager.isLoggedIn()) {
+            sessionManager.initializeDefaultSession();
+        }
+
         initComponents();
         cargarProductosDisponibles();
         actualizarTablaDetalle();
@@ -210,12 +217,26 @@ public class FrmRegistrarVenta extends JInternalFrame {
         }
 
         try {
-            // Aquí se asumen valores para idTienda, idUsuarioVendedor, metodoPago, descuentoGlobal
-            // En una aplicación real, estos valores vendrían de la interfaz de usuario o de la sesión del usuario
-            int idTienda = 1; // Ejemplo
-            int idUsuarioVendedor = 1; // Ejemplo
-            String metodoPago = "Efectivo"; // Ejemplo
-            double descuentoGlobal = 0.0; // Ejemplo
+            // Obtener información del usuario actual desde la sesión
+            SessionManager sessionManager = SessionManager.getInstance();
+            Integer idTienda = sessionManager.getCurrentStoreId();
+            Integer idUsuarioVendedor = sessionManager.getCurrentUserId();
+
+            // LOG: Validar valores obtenidos de la sesión
+            System.out.println("DEBUG: idTienda obtenido de sesión = " + idTienda);
+            System.out.println("DEBUG: idUsuarioVendedor obtenido de sesión = " + idUsuarioVendedor);
+
+            // Validar que tengamos la información necesaria
+            if (idTienda == null || idUsuarioVendedor == null) {
+                JOptionPane.showMessageDialog(this,
+                    "Error: No se pudo obtener la información del usuario actual.\nPor favor, inicie sesión nuevamente.",
+                    "Error de Sesión",
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            String metodoPago = "Efectivo"; //  Agregar selección de método de pago
+            double descuentoGlobal = 0.0; // Agregar campo para descuento global
 
             Venta venta = ventaNegocio.procesarVenta(idTienda, idUsuarioVendedor, detallesVenta, metodoPago, descuentoGlobal);
             JOptionPane.showMessageDialog(this, "Venta registrada con éxito. ID de Venta: " + venta.getIdVenta(), "Éxito", JOptionPane.INFORMATION_MESSAGE);

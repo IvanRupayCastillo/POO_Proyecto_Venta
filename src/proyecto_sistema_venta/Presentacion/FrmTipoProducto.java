@@ -4,6 +4,7 @@ package proyecto_sistema_venta.Presentacion;
 import proyecto_sistema_venta.Negocio.TipoProductoNegocio;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableRowSorter;
+import javax.swing.table.TableModel;
 
 public class FrmTipoProducto extends javax.swing.JInternalFrame {
 
@@ -38,7 +39,7 @@ public class FrmTipoProducto extends javax.swing.JInternalFrame {
      */
     private void listar(String texto) {
         TblDatos.setModel(this.CONTROL.listar(texto));
-        TableRowSorter orden = new TableRowSorter(TblDatos.getModel());
+        TableRowSorter<TableModel> orden = new TableRowSorter<>(TblDatos.getModel());
         TblDatos.setRowSorter(orden);
         this.ocultarColumnas();
         LblTotalRegistros.setText("Total de registros: " + this.CONTROL.total());
@@ -80,8 +81,7 @@ public class FrmTipoProducto extends javax.swing.JInternalFrame {
     /**
      * Método de inicialización de componentes generado por el editor visual
      */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
 
         TabGeneral = new javax.swing.JTabbedPane();
@@ -355,13 +355,17 @@ public class FrmTipoProducto extends javax.swing.JInternalFrame {
                 JOptionPane.showMessageDialog(this, resp, "Sistema", JOptionPane.WARNING_MESSAGE);
             }
         } else if (this.accion.equals("editar")) {
-            resp = this.CONTROL.actualizar(
-                Integer.parseInt(TxtId.getText()), 
-                TxtCodigo.getText(), 
-                TxtNombre.getText(),
-                TxtDescripcion.getText(),
-                ChkActivo.isSelected()
-            );
+             if (TxtNombre.getText().equals(this.nombreAnt)) {
+                 JOptionPane.showMessageDialog(this, "El nombre no ha cambiado", "Sistema", JOptionPane.INFORMATION_MESSAGE);
+                 return;
+             }
+             resp = this.CONTROL.actualizar(
+                 Integer.parseInt(TxtId.getText()),
+                 TxtCodigo.getText(),
+                 TxtNombre.getText(),
+                 TxtDescripcion.getText(),
+                 ChkActivo.isSelected()
+             );
             if (resp.equals("OK")) {
                 this.limpiar();
                 this.listar("");

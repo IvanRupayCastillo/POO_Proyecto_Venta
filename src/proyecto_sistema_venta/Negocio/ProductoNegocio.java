@@ -9,14 +9,12 @@ import javax.swing.table.DefaultTableModel;
 public class ProductoNegocio {
     
     private final ProductoDAO DATOS;
-    private Producto productoSeleccionado;
     private DefaultTableModel dtm;
     private int totalRegistros;
     private int totalMostrados;
     
     public ProductoNegocio() {
         this.DATOS = new ProductoDAO();
-        this.productoSeleccionado = null;
         this.totalRegistros = 0;
         this.totalMostrados = 0;
     }

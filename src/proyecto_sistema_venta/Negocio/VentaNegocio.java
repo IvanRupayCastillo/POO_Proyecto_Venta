@@ -224,12 +224,47 @@ public class VentaNegocio {
      * Lista todas las ventas, opcionalmente filtradas por texto de búsqueda
      */
     public javax.swing.table.TableModel listar(String texto) {
-        javax.swing.table.DefaultTableModel model = new javax.swing.table.DefaultTableModel();
-        model.addColumn("ID Venta");
-        model.addColumn("Fecha");
-        model.addColumn("Total");
-        model.addColumn("Método Pago");
-        // Stub - retorna tabla vacía para compilar
+        javax.swing.table.DefaultTableModel model = new javax.swing.table.DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Hacer la tabla no editable
+            }
+        };
+        
+        String[] columnas = {"ID Venta", "Fecha", "Total", "Método Pago"};
+        model.setColumnIdentifiers(columnas);
+        
+        try {
+            // Obtener todas las ventas (por ahora de todas las tiendas)
+            // TODO: Filtrar por tienda del usuario logueado
+            List<Venta> ventas = ventaDAO.listarPorTienda(1); // Tienda 1 por defecto
+            
+            for (Venta v : ventas) {
+                Object[] fila = new Object[4];
+                fila[0] = v.getIdVenta();
+                fila[1] = v.getFechaVenta();
+                fila[2] = String.format("S/ %.2f", v.getTotal());
+                fila[3] = v.getMetodoPago();
+                
+                // Filtrar por texto si se proporciona
+                if (texto == null || texto.trim().isEmpty()) {
+                    model.addRow(fila);
+                } else {
+                    String busqueda = texto.toLowerCase();
+                    String idStr = String.valueOf(v.getIdVenta()).toLowerCase();
+                    String fecha = v.getFechaVenta().toString().toLowerCase();
+                    String metodo = v.getMetodoPago().toLowerCase();
+                    
+                    if (idStr.contains(busqueda) || fecha.contains(busqueda) || metodo.contains(busqueda)) {
+                        model.addRow(fila);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error al listar ventas: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
         return model;
     }
 
@@ -242,5 +277,76 @@ public class VentaNegocio {
         tipos.add("Factura");
         tipos.add("Ticket");
         return tipos;
+    }
+
+    /**
+     * Registra una venta completa usando el stored procedure
+     * @param venta Objeto Venta con los datos de la cabecera
+     * @param detalles Lista de DetalleVenta con los productos
+     * @return Mensaje de resultado
+     */
+    public String registrarVentaCompleta(Venta venta, List<DetalleVenta> detalles) {
+        System.out.println("VentaNegocio.registrarVentaCompleta - INICIO");
+        
+        try {
+            // Validaciones
+            if (detalles == null || detalles.isEmpty()) {
+                System.out.println("ERROR: Detalles vacíos");
+                return "ERROR: La venta debe contener al menos un producto";
+            }
+            
+            System.out.println("LOG: Detalles recibidos: " + detalles.size());
+            
+            // ID del tipo de movimiento para "SALIDA POR VENTA" (debe existir en la BD)
+            int idTipoMovimiento = 2; // Ajustar según tu base de datos
+            
+            // Generar número de documento para el movimiento
+            String numeroDocMov = "MOV-" + System.currentTimeMillis();
+            
+            System.out.println("LOG: Llamando a ventaDAO.registrarVentaCompleta...");
+            System.out.println("LOG: idTipoMovimiento: " + idTipoMovimiento);
+            System.out.println("LOG: numeroDocMov: " + numeroDocMov);
+            
+            // Llamar al DAO
+            Object[] resultado = ventaDAO.registrarVentaCompleta(venta, detalles, idTipoMovimiento, numeroDocMov);
+            
+            System.out.println("LOG: Resultado DAO recibido");
+            System.out.println("LOG: resultado[0] (idVenta): " + resultado[0]);
+            System.out.println("LOG: resultado[1] (idMovimiento): " + resultado[1]);
+            System.out.println("LOG: resultado[2] (codigoError): " + resultado[2]);
+            System.out.println("LOG: resultado[3] (mensaje): " + resultado[3]);
+            
+            int codigoError = (int) resultado[2];
+            String mensaje = (String) resultado[3];
+            
+            if (codigoError == 0) {
+                System.out.println("LOG: Venta exitosa");
+                // Éxito
+                int idVenta = (int) resultado[0];
+                venta.setIdVenta(idVenta);
+                
+                // Generar recibos
+                for (DetalleVenta d : detalles) {
+                    venta.agregarDetalle(d);
+                }
+                System.out.println("LOG: Generando recibos...");
+                generarReciboJSON(venta);
+                generarReciboXML(venta);
+                
+                System.out.println("VentaNegocio.registrarVentaCompleta - FIN EXITOSO");
+                return "OK";
+            } else {
+                // Error
+                System.out.println("ERROR: " + mensaje);
+                System.out.println("VentaNegocio.registrarVentaCompleta - FIN CON ERROR");
+                return mensaje;
+            }
+            
+        } catch (Exception e) {
+            System.out.println("EXCEPTION en VentaNegocio.registrarVentaCompleta: " + e.getClass().getName());
+            System.out.println("EXCEPTION Message: " + e.getMessage());
+            e.printStackTrace();
+            return "ERROR: " + (e.getMessage() != null ? e.getMessage() : e.toString());
+        }
     }
 }

@@ -93,33 +93,39 @@ public class TallaNegocio {
      * @param nombreTalla Nombre de la talla
      * @param ordenVisualizacion Orden de visualización
      * @param activo Estado de la talla
+     * @param nombreAnt Nombre anterior para validar cambios
      * @return Mensaje de resultado
      */
-    public String actualizar(int id, String tipoTalla, String nombreTalla, int ordenVisualizacion, boolean activo) {
+    public String actualizar(int id, String tipoTalla, String nombreTalla, int ordenVisualizacion, boolean activo, String nombreAnt) {
         // Validaciones
         if (tipoTalla == null || tipoTalla.trim().length() == 0) {
             return "Debe seleccionar un tipo de talla";
         }
-        
+
         if (!tipoTalla.equals("NUMERICA") && !tipoTalla.equals("LETRAS") && !tipoTalla.equals("ESPECIAL")) {
             return "El tipo de talla debe ser: NUMERICA, LETRAS o ESPECIAL";
         }
-        
+
         if (nombreTalla.trim().length() == 0 || nombreTalla.trim().length() > 20) {
             return "El nombre es obligatorio y debe tener máximo 20 caracteres";
         }
-        
+
         if (ordenVisualizacion < 0 || ordenVisualizacion > 999) {
             return "El orden de visualización debe estar entre 0 y 999";
         }
-        
+
+        // Verificar si el nombre cambió y si ya existe
+        if (!nombreTalla.trim().toUpperCase().equals(nombreAnt.trim().toUpperCase()) && DATOS.existe(nombreTalla.trim())) {
+            return "El nombre de talla ya existe en el sistema";
+        }
+
         Talla obj = new Talla();
         obj.setIdTalla(id);
         obj.setTipoTalla(tipoTalla);
         obj.setNombreTalla(nombreTalla.trim().toUpperCase());
         obj.setOrdenVisualizacion(ordenVisualizacion);
         obj.setActivo(activo);
-        
+
         if (DATOS.actualizar(obj)) {
             return "OK";
         } else {

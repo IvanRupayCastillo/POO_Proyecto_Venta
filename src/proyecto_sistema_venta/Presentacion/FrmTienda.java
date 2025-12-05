@@ -2,6 +2,7 @@ package proyecto_sistema_venta.Presentacion;
 
 import proyecto_sistema_venta.Negocio.TiendaNegocio;
 import javax.swing.JOptionPane;
+import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 public class FrmTienda extends javax.swing.JInternalFrame {
@@ -19,7 +20,7 @@ public class FrmTienda extends javax.swing.JInternalFrame {
         this.accion = "guardar";
         this.listar("");
         this.ocultarColumnas();
-        TxtTotal.setText("Total de registros: " + this.CONTROL.total());
+        LblTotalRegistros.setText("Total de registros: " + this.CONTROL.total());
     }
 
     /**
@@ -36,7 +37,7 @@ public class FrmTienda extends javax.swing.JInternalFrame {
      */
     private void listar(String texto) {
         TblDatos.setModel(this.CONTROL.listar(texto));
-        TableRowSorter orden = new TableRowSorter(TblDatos.getModel());
+        TableRowSorter<TableModel> orden = new TableRowSorter<>(TblDatos.getModel());
         TblDatos.setRowSorter(orden);
         this.ocultarColumnas();
         LblTotalRegistros.setText("Total de registros: " + this.CONTROL.total());
@@ -80,8 +81,7 @@ public class FrmTienda extends javax.swing.JInternalFrame {
     /**
      * Método de inicialización de componentes generado por el editor visual
      */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
 
         TabGeneral = new javax.swing.JTabbedPane();
@@ -258,7 +258,6 @@ public class FrmTienda extends javax.swing.JInternalFrame {
                         .addGroup(PnlMantenimientoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(TxtCodigo)
                             .addComponent(TxtNombre)
-                            .addComponent(TxtDireccion)
                             .addComponent(TxtTelefono)
                             .addComponent(TxtId, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(TxtDireccion, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE))))
@@ -361,9 +360,13 @@ public class FrmTienda extends javax.swing.JInternalFrame {
                 JOptionPane.showMessageDialog(this, resp, "Sistema", JOptionPane.WARNING_MESSAGE);
             }
         } else if (this.accion.equals("editar")) {
+            if (TxtNombre.getText().equals(this.nombreAnt)) {
+                JOptionPane.showMessageDialog(this, "El nombre no ha cambiado", "Sistema", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
             resp = this.CONTROL.actualizar(
-                Integer.parseInt(TxtId.getText()), 
-                TxtCodigo.getText(), 
+                Integer.parseInt(TxtId.getText()),
+                TxtCodigo.getText(),
                 TxtNombre.getText(),
                 TxtDireccion.getText(),
                 TxtTelefono.getText(),
@@ -393,7 +396,7 @@ public class FrmTienda extends javax.swing.JInternalFrame {
         // Implementar si se desea acción al hacer clic en la tabla
     }                                     
 
-    private void BtnEditarActionPerformed(java.awt.event.ActionEvent evt) {                                          
+    private void BtnEditarActionPerformed(java.awt.event.ActionEvent evt) {
         if (TblDatos.getSelectedRowCount() == 1) {
             String id = String.valueOf(TblDatos.getValueAt(TblDatos.getSelectedRow(), 0));
             String codigo = String.valueOf(TblDatos.getValueAt(TblDatos.getSelectedRow(), 1));
@@ -418,7 +421,7 @@ public class FrmTienda extends javax.swing.JInternalFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Seleccione un registro de la tabla", "Sistema", JOptionPane.WARNING_MESSAGE);
         }
-    }                                         
+    }
 
     private void BtnAnularActionPerformed(java.awt.event.ActionEvent evt) {                                          
         if (TblDatos.getSelectedRowCount() == 1) {
