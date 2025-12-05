@@ -63,5 +63,30 @@ public class InventarioDAO implements IInventario {
         }
         return ok;
     }
+
+    /**
+     * Crea un registro de inventario para una tienda-producto si no existe.
+     */
+    public boolean crearInventarioSiNoExiste(int idTienda, int idProducto, int stockInicial) {
+        boolean ok = false;
+        PreparedStatement ps = null;
+        try {
+            ps = CNX.conectar().prepareStatement(
+                "INSERT INTO inventario (id_tienda, id_producto, stock_actual, stock_reservado) " +
+                "VALUES (?,?,?,0) ON DUPLICATE KEY UPDATE stock_actual = stock_actual"
+            );
+            ps.setInt(1, idTienda);
+            ps.setInt(2, idProducto);
+            ps.setInt(3, stockInicial);
+            ok = ps.executeUpdate() > 0;
+            ps.close();
+        } catch (SQLException e) {
+            ok = false;
+        } finally {
+            ps = null;
+            CNX.desconectar();
+        }
+        return ok;
+    }
 }
 

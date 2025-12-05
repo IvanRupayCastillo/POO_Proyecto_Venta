@@ -66,6 +66,56 @@ public class ProductoDAO implements IProducto {
         }
         return registros;
     }
+
+    /**
+     * Lista productos que tienen inventario en la tienda indicada.
+     */
+    public List<Producto> listarPorTienda(String texto, int idTienda) {
+        List<Producto> registros = new ArrayList<>();
+        try {
+            ps = CNX.conectar().prepareStatement(
+                "SELECT p.id_producto, p.codigo_producto, p.nombre_producto, p.descripcion, " +
+                "p.id_tipo, p.id_color, p.id_talla, p.precio_compra, p.precio_venta_mayor, " +
+                "p.precio_venta_menor, p.stock_minimo, p.activo, p.created_at, p.updated_at " +
+                "FROM productos p " +
+                "JOIN inventario i ON i.id_producto = p.id_producto " +
+                "WHERE i.id_tienda = ? AND (p.nombre_producto LIKE ? OR p.codigo_producto LIKE ?) " +
+                "ORDER BY p.id_producto DESC"
+            );
+            ps.setInt(1, idTienda);
+            ps.setString(2, "%" + texto + "%");
+            ps.setString(3, "%" + texto + "%");
+            rs = ps.executeQuery();
+
+            while(rs.next()) {
+                registros.add(new Producto(
+                    rs.getInt("id_producto"),
+                    rs.getString("codigo_producto"),
+                    rs.getString("nombre_producto"),
+                    rs.getString("descripcion"),
+                    rs.getInt("id_tipo"),
+                    rs.getInt("id_color"),
+                    rs.getInt("id_talla"),
+                    rs.getDouble("precio_compra"),
+                    rs.getDouble("precio_venta_mayor"),
+                    rs.getDouble("precio_venta_menor"),
+                    rs.getInt("stock_minimo"),
+                    rs.getBoolean("activo"),
+                    rs.getTimestamp("created_at"),
+                    rs.getTimestamp("updated_at")
+                ));
+            }
+            ps.close();
+            rs.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al listar productos por tienda: " + e.getMessage());
+        } finally {
+            ps = null;
+            rs = null;
+            CNX.desconectar();
+        }
+        return registros;
+    }
     
     @Override
     public boolean insertar(Producto producto) {

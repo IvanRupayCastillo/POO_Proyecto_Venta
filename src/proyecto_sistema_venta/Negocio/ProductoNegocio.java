@@ -23,20 +23,32 @@ public class ProductoNegocio {
     public DefaultTableModel listar(String texto) {
         List<Producto> lista = new ArrayList<>();
         lista.addAll(DATOS.listar(texto));
-        
+        return buildTableModel(lista);
+    }
+
+    /**
+     * Lista productos solo para la tienda indicada.
+     */
+    public DefaultTableModel listarPorTienda(String texto, int idTienda) {
+        List<Producto> lista = new ArrayList<>();
+        lista.addAll(DATOS.listarPorTienda(texto, idTienda));
+        return buildTableModel(lista);
+    }
+
+    private DefaultTableModel buildTableModel(List<Producto> lista) {
         String[] columnas = {
             "ID", "Código", "Nombre", "Descripción", 
             "Tipo", "Color", "Talla", "P. Compra", 
             "P. Venta Mayor", "P. Venta Menor", 
             "Stock Mínimo", "Estado"
         };
-        
+
         this.dtm = new DefaultTableModel(null, columnas) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Hacer las celdas no editables
             }
-            
+
             @Override
             public Class<?> getColumnClass(int columnIndex) {
                 // Definir tipos de datos para ordenamiento correcto
@@ -56,18 +68,14 @@ public class ProductoNegocio {
                 }
             }
         };
-        
+
         String estado;
         Object[] registro = new Object[12];
-        
+
         this.totalRegistros = 0;
         for (Producto item : lista) {
-            if (item.isActivo()) {
-                estado = "Activo";
-            } else {
-                estado = "Inactivo";
-            }
-            
+            estado = item.isActivo() ? "Activo" : "Inactivo";
+
             registro[0] = item.getIdProducto();
             registro[1] = item.getCodigoProducto();
             registro[2] = item.getNombreProducto();
@@ -80,7 +88,7 @@ public class ProductoNegocio {
             registro[9] = item.getPrecioVentaMenor();
             registro[10] = item.getStockMinimo();
             registro[11] = estado;
-            
+
             this.dtm.addRow(registro);
             this.totalRegistros++;
         }
@@ -148,6 +156,10 @@ public class ProductoNegocio {
     
     public List<Producto> obtenerTodosProductos() {
         return DATOS.listar("");
+    }
+
+    public Producto buscarPorCodigo(String codigo) {
+        return DATOS.buscarPorCodigo(codigo);
     }
     
     public Producto obtenerProductoPorId(int idProducto) {

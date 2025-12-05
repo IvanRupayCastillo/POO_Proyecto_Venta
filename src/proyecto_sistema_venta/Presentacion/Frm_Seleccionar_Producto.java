@@ -5,6 +5,7 @@
 package proyecto_sistema_venta.Presentacion;
 
  
+import proyecto_sistema_venta.Datos.InventarioDAO;
 import proyecto_sistema_venta.Negocio.ProductoNegocio;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableRowSorter;
@@ -13,9 +14,11 @@ import javax.swing.table.TableRowSorter;
  * @author User
  */
 public class Frm_Seleccionar_Producto extends javax.swing.JDialog {
-    
+
     private Frm_Venta vista;
     private final ProductoNegocio CONTROL;
+    private final InventarioDAO INVENTARIO;
+    private final Integer idTiendaActual;
     /**
      * Creates new form Frm_Seleccionar_Producto
      */
@@ -25,9 +28,21 @@ public class Frm_Seleccionar_Producto extends javax.swing.JDialog {
         this.setLocationRelativeTo(null);
         this.vista=frm;
         this.setTitle("Seleccionar Productos para la venta");
-        
-        this.CONTROL=new ProductoNegocio();     
-        this.listar("");
+
+        this.CONTROL=new ProductoNegocio();
+        this.INVENTARIO = new InventarioDAO();
+        SessionManager sessionManager = SessionManager.getInstance();
+        this.idTiendaActual = sessionManager.getCurrentStoreId();
+
+        if (idTiendaActual == null) {
+            JOptionPane.showMessageDialog(this,
+                "No se pudo determinar la tienda del usuario. Inicie sesión nuevamente.",
+                "Sesión no disponible",
+                JOptionPane.ERROR_MESSAGE);
+            this.dispose();
+            return;
+        }
+
         this.listar("");
         // Configurar búsqueda automática
         configurarBusquedaAutomatica();
@@ -37,8 +52,7 @@ public class Frm_Seleccionar_Producto extends javax.swing.JDialog {
     
     
      private void listar(String texto){
-               
-        TblListadoProducto.setModel(this.CONTROL.listar(texto));
+          TblListadoProducto.setModel(this.CONTROL.listarPorTienda(texto, idTiendaActual));
         TableRowSorter<javax.swing.table.TableModel> orden = new TableRowSorter<>(TblListadoProducto.getModel());
         TblListadoProducto.setRowSorter(orden);                
     }
@@ -155,10 +169,12 @@ public class Frm_Seleccionar_Producto extends javax.swing.JDialog {
             
             // Usar precio de venta menor (columna 9)
             double precioVenta = Double.parseDouble(TblListadoProducto.getValueAt(fila, 9).toString());
-            
-            // Stock temporal (debería consultarse del inventario por tienda)
-            int stock = 100;
-            
+
+            // Obtener stock del inventario
+            Integer stockObj = INVENTARIO.obtenerStockDisponible(idTiendaActual, idProducto);
+            int stock = (stockObj != null) ? stockObj : 0;
+            System.out.println("Stock obtenido para producto " + idProducto + " en tienda " + idTiendaActual + ": " + stock);
+
             // Solicitar cantidad
             String cantidadStr = JOptionPane.showInputDialog(this, 
                 "Ingrese la cantidad a vender (Stock disponible: " + stock + "):", 

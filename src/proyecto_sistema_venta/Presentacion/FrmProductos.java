@@ -7,6 +7,9 @@ import proyecto_sistema_venta.Negocio.TallaNegocio;
 import proyecto_sistema_venta.Entidades.TipoProducto;
 import proyecto_sistema_venta.Entidades.Color;
 import proyecto_sistema_venta.Entidades.Talla;
+import proyecto_sistema_venta.Datos.InventarioDAO;
+import proyecto_sistema_venta.Entidades.Producto;
+import proyecto_sistema_venta.Presentacion.SessionManager;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
@@ -19,6 +22,8 @@ public class FrmProductos extends javax.swing.JInternalFrame {
     private final TipoProductoNegocio TIPO_CONTROL;
     private final ColorNegocio COLOR_CONTROL;
     private final TallaNegocio TALLA_CONTROL;
+    private final InventarioDAO INVENTARIO_DAO;
+    private final Integer idTiendaActual;
     private String accion;
     private String codigoAnt;
     
@@ -32,15 +37,27 @@ public class FrmProductos extends javax.swing.JInternalFrame {
         this.TIPO_CONTROL = new TipoProductoNegocio();
         this.COLOR_CONTROL = new ColorNegocio();
         this.TALLA_CONTROL = new TallaNegocio();
+        this.INVENTARIO_DAO = new InventarioDAO();
         this.accion = "guardar";
         
+        SessionManager sessionManager = SessionManager.getInstance();
+        this.idTiendaActual = sessionManager.getCurrentStoreId();
+
         initComponents();
+
+        if (idTiendaActual == null) {
+            JOptionPane.showMessageDialog(this,
+                "No se pudo determinar la tienda del usuario. Inicie sesión nuevamente.",
+                "Sesión no disponible",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         
         try {
             this.cargarCombos();
             this.listar("");
             this.ocultarColumnas();
-            TxtTotal.setText("Total de registros: " + this.CONTROL.total());
+            TxtTotal.setText("Total de registros: " + TblDatos.getRowCount());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al cargar datos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
@@ -116,11 +133,14 @@ public class FrmProductos extends javax.swing.JInternalFrame {
     }
 
     private void listar(String texto) {
-        TblDatos.setModel(this.CONTROL.listar(texto));
+        if (idTiendaActual == null) {
+            return;
+        }
+        TblDatos.setModel(this.CONTROL.listarPorTienda(texto, idTiendaActual));
         TableRowSorter<DefaultTableModel> orden = new TableRowSorter<>((DefaultTableModel) TblDatos.getModel());
         TblDatos.setRowSorter(orden);
         this.ocultarColumnas();
-        LblTotalRegistros.setText("Total de registros: " + this.CONTROL.total());
+        LblTotalRegistros.setText("Total de registros: " + TblDatos.getRowCount());
     }
 
     private void limpiar() {
@@ -529,6 +549,10 @@ public class FrmProductos extends javax.swing.JInternalFrame {
                 true
             );
             if (resp.equals("OK")) {
+                Producto p = CONTROL.buscarPorCodigo(TxtCodigo.getText());
+                if (p != null) {
+                    INVENTARIO_DAO.crearInventarioSiNoExiste(idTiendaActual, p.getIdProducto(), 0);
+                }
                 this.limpiar();
                 this.listar("");
                 JOptionPane.showMessageDialog(this, "Producto registrado correctamente", "Sistema", JOptionPane.INFORMATION_MESSAGE);
@@ -553,6 +577,10 @@ public class FrmProductos extends javax.swing.JInternalFrame {
                 this.codigoAnt
             );
             if (resp.equals("OK")) {
+                try {
+                    int idProd = Integer.parseInt(TxtId.getText());
+                    INVENTARIO_DAO.crearInventarioSiNoExiste(idTiendaActual, idProd, 0);
+                } catch (NumberFormatException ignored) {}
                 this.limpiar();
                 this.listar("");
                 JOptionPane.showMessageDialog(this, "Producto actualizado correctamente", "Sistema", JOptionPane.INFORMATION_MESSAGE);
