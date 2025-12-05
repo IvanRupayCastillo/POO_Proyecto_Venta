@@ -36,6 +36,7 @@ public class FrmMenu extends javax.swing.JFrame {
         MniTalla = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
         MniTienda = new javax.swing.JMenuItem();
+        MniKardex = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         jMenu4 = new javax.swing.JMenu();
         jMenu5 = new javax.swing.JMenu();
@@ -88,6 +89,14 @@ public class FrmMenu extends javax.swing.JFrame {
             }
         });
         MniTipoProducto.add(MniTienda);
+
+        MniKardex.setText("Kardex");
+        MniKardex.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MniKardexActionPerformed(evt);
+            }
+        });
+        MniTipoProducto.add(MniKardex);
 
         jMenuBar1.add(MniTipoProducto);
 
@@ -190,6 +199,12 @@ public class FrmMenu extends javax.swing.JFrame {
         frmTienda.setVisible(true);
     }//GEN-LAST:event_MniTiendaActionPerformed
 
+    private void MniKardexActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MniKardexActionPerformed
+        FrmKardex frmKardex = new FrmKardex();
+        desktopPane.add(frmKardex);
+        frmKardex.setVisible(true);
+    }//GEN-LAST:event_MniKardexActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -227,6 +242,7 @@ public class FrmMenu extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem MniColor;
+    private javax.swing.JMenuItem MniKardex;
     private javax.swing.JMenuItem MniListarProductos;
     private javax.swing.JMenuItem MniProductos;
     private javax.swing.JMenuItem MniRegistrarVenta;
