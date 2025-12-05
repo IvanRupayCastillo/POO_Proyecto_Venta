@@ -22,10 +22,15 @@ public class Conexion {
     
     public Connection conectar(){
         try {
-            Class.forName(DRIVER);  
-            this.cnx =DriverManager.getConnection(URL+DB,USER,PASSWORD);
-        } catch (ClassNotFoundException| SQLException e) {
-            JOptionPane.showMessageDialog(null, e.getMessage());
+            // Cargar el driver automáticamente
+            Class.forName(DRIVER);
+            this.cnx = DriverManager.getConnection(URL+DB, USER, PASSWORD);
+            JOptionPane.showMessageDialog(null, "Conexión exitosa a la base de datos");
+        } catch (ClassNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "Error: Driver MySQL no encontrado\n" + e.getMessage());
+            System.exit(0);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error de conexión a la base de datos:\n" + e.getMessage());
             System.exit(0);
         }
         return this.cnx;
@@ -33,9 +38,11 @@ public class Conexion {
     
     public void desconectar(){
         try {
-            this.cnx.close();
+            if(this.cnx != null && !this.cnx.isClosed()) {
+                this.cnx.close();
+            }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error al desconectar:\n" + e.getMessage());
             System.exit(0);
         }
     }

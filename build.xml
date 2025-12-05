@@ -10,6 +10,13 @@
 <project name="proyecto_sistema_venta" default="default" basedir=".">
     <description>Builds, tests, and runs the project proyecto_sistema_venta.</description>
     <import file="nbproject/build-impl.xml"/>
+    
+    <!-- Target personalizado para copiar el driver MySQL después de compilar -->
+    <target name="-post-jar">
+        <copy file="mysql-connector-j-9.3.0.jar" todir="dist"/>
+        <echo message="Driver MySQL copiado a dist/"/>
+    </target>
+    
     <!--
 
     There exist several targets which are by default empty and which can be 

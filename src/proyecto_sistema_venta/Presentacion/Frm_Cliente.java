@@ -408,7 +408,7 @@ public class Frm_Cliente extends javax.swing.JInternalFrame {
             String estado = String.valueOf(TblCliente.getValueAt(TblCliente.getSelectedRow(), 7));
             
             boolean est;
-            if (estado == "Inactivo") {
+            if (estado.equals("Inactivo")) {
                 est = false;
             } else {
                 est = true;
