@@ -131,9 +131,29 @@ public class FrmMenu extends javax.swing.JFrame {
         jMenuBar1.add(MnuTienda);
 
         jMenu3.setText("Consultas");
+        
+        javax.swing.JMenuItem MniConsultasVentas = new javax.swing.JMenuItem();
+        MniConsultasVentas.setText("Consultar Ventas");
+        MniConsultasVentas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MniConsultasVentasActionPerformed(evt);
+            }
+        });
+        jMenu3.add(MniConsultasVentas);
+        
         jMenuBar1.add(jMenu3);
 
         jMenu4.setText("Reportes");
+        
+        javax.swing.JMenuItem MniReportes = new javax.swing.JMenuItem();
+        MniReportes.setText("Generar Reportes");
+        MniReportes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MniReportesActionPerformed(evt);
+            }
+        });
+        jMenu4.add(MniReportes);
+        
         jMenuBar1.add(jMenu4);
 
         jMenu5.setText("Salir");
@@ -273,6 +293,28 @@ public class FrmMenu extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }//GEN-LAST:event_MniClienteActionPerformed
+
+    private void MniConsultasVentasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MniConsultasVentasActionPerformed
+        FrmConsultasVentas frmConsultas = new FrmConsultasVentas();
+        desktopPane.add(frmConsultas);
+        frmConsultas.setVisible(true);
+        try {
+            frmConsultas.setMaximum(true);
+        } catch (java.beans.PropertyVetoException e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_MniConsultasVentasActionPerformed
+
+    private void MniReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MniReportesActionPerformed
+        FrmReportes frmReportes = new FrmReportes();
+        desktopPane.add(frmReportes);
+        frmReportes.setVisible(true);
+        try {
+            frmReportes.setMaximum(true);
+        } catch (java.beans.PropertyVetoException e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_MniReportesActionPerformed
 
     private void MniSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MniSalirActionPerformed
         int respuesta = javax.swing.JOptionPane.showConfirmDialog(
