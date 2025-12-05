@@ -12,7 +12,7 @@ import proyecto_sistema_venta.Entidades.Venta;
 import proyecto_sistema_venta.Negocio.ProductoNegocio;
 import proyecto_sistema_venta.Negocio.VentaNegocio;
 
-public class FrmRegistrarVenta extends JFrame {
+public class FrmRegistrarVenta extends JInternalFrame {
 
     private JComboBox<String> cmbProductos;
     private JTextField txtCantidad;

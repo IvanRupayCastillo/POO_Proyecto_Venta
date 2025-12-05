@@ -8,7 +8,7 @@ import java.util.List;
 import proyecto_sistema_venta.Entidades.Producto;
 import proyecto_sistema_venta.Negocio.ProductoNegocio;
 
-public class FrmListarProductos extends JFrame {
+public class FrmListarProductos extends JInternalFrame {
 
     private JTable tblProductos;
     private JButton btnRefrescar;
