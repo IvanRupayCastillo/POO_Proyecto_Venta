@@ -1,15 +1,10 @@
-
 package proyecto_sistema_venta.Negocio;
-
 
 import proyecto_sistema_venta.Datos.ProductoDAO;
 import proyecto_sistema_venta.Entidades.Producto;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
-
-
-
 
 public class ProductoNegocio {
     
@@ -153,6 +148,14 @@ public class ProductoNegocio {
         }
     }
     
+    public List<Producto> obtenerTodosProductos() {
+        return DATOS.listar("");
+    }
+    
+    public Producto obtenerProductoPorId(int idProducto) {
+        return DATOS.buscarPorId(idProducto);
+    }
+    
     // Método para actualizar un producto
     public String actualizar(int idProducto, String codigoProducto, String nombreProducto, 
                             String descripcion, int idTipo, int idColor, int idTalla, 
@@ -242,95 +245,11 @@ public class ProductoNegocio {
         }
     }
     
-    // Método para buscar un producto por ID
-    public Producto buscarPorId(int idProducto) {
-        productoSeleccionado = DATOS.buscarPorId(idProducto);
-        return productoSeleccionado;
-    }
-    
-    // Método para buscar productos por descripción
-    public DefaultTableModel buscarPorDescripcion(String descripcion) {
-        List<Producto> lista = DATOS.buscarPorDescripcion(descripcion);
-        
-        String[] columnas = {
-            "ID", "Código", "Nombre", "Descripción", 
-            "Tipo", "Color", "Talla", "P. Compra", 
-            "P. Venta Mayor", "P. Venta Menor", 
-            "Stock Mínimo", "Estado"
-        };
-        
-        this.dtm = new DefaultTableModel(null, columnas);
-        String estado;
-        Object[] registro = new Object[12];
-        
-        this.totalRegistros = 0;
-        for (Producto item : lista) {
-            if (item.isActivo()) {
-                estado = "Activo";
-            } else {
-                estado = "Inactivo";
-            }
-            
-            registro[0] = item.getIdProducto();
-            registro[1] = item.getCodigoProducto();
-            registro[2] = item.getNombreProducto();
-            registro[3] = item.getDescripcion();
-            registro[4] = item.getIdTipo();
-            registro[5] = item.getIdColor();
-            registro[6] = item.getIdTalla();
-            registro[7] = item.getPrecioCompra();
-            registro[8] = item.getPrecioVentaMayor();
-            registro[9] = item.getPrecioVentaMenor();
-            registro[10] = item.getStockMinimo();
-            registro[11] = estado;
-            
-            this.dtm.addRow(registro);
-            this.totalRegistros++;
-        }
-        this.totalMostrados = this.totalRegistros;
-        return this.dtm;
-    }
-    
-    // Método para buscar un producto por código
-    public Producto buscarPorCodigo(String codigoProducto) {
-        productoSeleccionado = DATOS.buscarPorCodigo(codigoProducto);
-        return productoSeleccionado;
-    }
-    
-    // Método para verificar si existe un código
-    public boolean existeCodigo(String codigoProducto) {
-        return DATOS.existeCodigo(codigoProducto);
-    }
-    
-    // Método para obtener el total de productos
     public int total() {
         return DATOS.total();
     }
     
-    // Getters para información adicional
-    public int getTotalRegistros() {
-        return totalRegistros;
-    }
-    
-    public int getTotalMostrados() {
-        return totalMostrados;
-    }
-    
-    public Producto getProductoSeleccionado() {
-        return productoSeleccionado;
-    }
-    
-    public void setProductoSeleccionado(Producto productoSeleccionado) {
-        this.productoSeleccionado = productoSeleccionado;
+    public int totalMostrados() {
+        return this.totalMostrados;
     }
 }
-
-
-
-
-
-
-
-
-
-

@@ -11,7 +11,7 @@ public class Conexion {
     private final String URL = "jdbc:mysql://localhost:3306/";
     private final String DB ="sistema_ventas_almacen";
     private final String USER ="root";
-    private final String PASSWORD ="290405Gra$";
+    private final String PASSWORD ="";
     
     public Connection cnx;
     public static Conexion instancia;

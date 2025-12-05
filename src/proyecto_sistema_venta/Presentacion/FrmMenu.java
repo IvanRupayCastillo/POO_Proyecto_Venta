@@ -32,9 +32,14 @@ public class FrmMenu extends javax.swing.JFrame {
         MniProductos = new javax.swing.JMenuItem();
         MniTalla = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
+        MniTienda = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         jMenu4 = new javax.swing.JMenu();
         jMenu5 = new javax.swing.JMenu();
+        // New Tienda Menu
+        MnuTienda = new javax.swing.JMenu();
+        MniListarProductos = new javax.swing.JMenuItem();
+        MniRegistrarVenta = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -49,15 +54,59 @@ public class FrmMenu extends javax.swing.JFrame {
         MniTipoProducto.add(MniColor);
 
         MniProductos.setText("Productos");
+        MniProductos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MniProductosActionPerformed(evt);
+            }
+        });
         MniTipoProducto.add(MniProductos);
 
         MniTalla.setText("Talla");
+        MniTalla.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MniTallaActionPerformed(evt);
+            }
+        });
         MniTipoProducto.add(MniTalla);
 
         jMenuItem1.setText("Tipo Producto");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
         MniTipoProducto.add(jMenuItem1);
 
+        MniTienda.setText("Tiendas");
+        MniTienda.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MniTiendaActionPerformed(evt);
+            }
+        });
+        MniTipoProducto.add(MniTienda);
+
         jMenuBar1.add(MniTipoProducto);
+
+        // Tienda Menu
+        MnuTienda.setText("Tienda");
+
+        MniListarProductos.setText("Listar Productos");
+        MniListarProductos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MniListarProductosActionPerformed(evt);
+            }
+        });
+        MnuTienda.add(MniListarProductos);
+
+        MniRegistrarVenta.setText("Registrar Venta");
+        MniRegistrarVenta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MniRegistrarVentaActionPerformed(evt);
+            }
+        });
+        MnuTienda.add(MniRegistrarVenta);
+
+        jMenuBar1.add(MnuTienda);
 
         jMenu3.setText("Consultas");
         jMenuBar1.add(jMenu3);
@@ -85,8 +134,39 @@ public class FrmMenu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void MniColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MniColorActionPerformed
-        // TODO add your handling code here:
+        FrmColor frmColor = new FrmColor();
+        frmColor.setVisible(true);
     }//GEN-LAST:event_MniColorActionPerformed
+
+    private void MniProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MniProductosActionPerformed
+        FrmProductos frmProductos = new FrmProductos();
+        frmProductos.setVisible(true);
+    }//GEN-LAST:event_MniProductosActionPerformed
+
+    private void MniTallaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MniTallaActionPerformed
+        FrmTalla frmTalla = new FrmTalla();
+        frmTalla.setVisible(true);
+    }//GEN-LAST:event_MniTallaActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        FrmTipoProducto frmTipoProducto = new FrmTipoProducto();
+        frmTipoProducto.setVisible(true);
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void MniListarProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MniListarProductosActionPerformed
+        FrmListarProductos frmListarProductos = new FrmListarProductos();
+        frmListarProductos.setVisible(true);
+    }//GEN-LAST:event_MniListarProductosActionPerformed
+
+    private void MniRegistrarVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MniRegistrarVentaActionPerformed
+        FrmRegistrarVenta frmRegistrarVenta = new FrmRegistrarVenta();
+        frmRegistrarVenta.setVisible(true);
+    }//GEN-LAST:event_MniRegistrarVentaActionPerformed
+
+    private void MniTiendaActionPerformed(java.awt.event.ActionEvent evt) {
+        FrmTienda frmTienda = new FrmTienda();
+        frmTienda.setVisible(true);
+    }
 /***/
     /**
      * @param args the command line arguments
@@ -125,13 +205,17 @@ public class FrmMenu extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem MniColor;
+    private javax.swing.JMenuItem MniListarProductos;
     private javax.swing.JMenuItem MniProductos;
+    private javax.swing.JMenuItem MniRegistrarVenta;
     private javax.swing.JMenuItem MniTalla;
+    private javax.swing.JMenuItem MniTienda;
     private javax.swing.JMenu MniTipoProducto;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenu MnuTienda;
     // End of variables declaration//GEN-END:variables
 }
