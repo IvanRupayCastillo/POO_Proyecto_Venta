@@ -3,7 +3,6 @@ package proyecto_sistema_venta.Datos;
 import proyecto_sistema_venta.Conexion.Conexion;
 import proyecto_sistema_venta.Entidades.Usuario;
 import java.sql.*;
-import java.time.LocalDateTime;
 
 public class UsuarioDAO {
     

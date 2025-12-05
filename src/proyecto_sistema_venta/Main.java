@@ -2,7 +2,6 @@ package proyecto_sistema_venta;
 
 import proyecto_sistema_venta.Presentacion.FrmLogin;
 import proyecto_sistema_venta.Presentacion.UIConfig;
-import javax.swing.UIManager;
 
 public class Main {
     public static void main(String[] args) {

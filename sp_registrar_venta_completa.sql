@@ -39,6 +39,12 @@ BEGIN
     DECLARE v_descuento_item DECIMAL(10,2);
     DECLARE v_json_array_size INT DEFAULT 0;
     DECLARE v_rows_affected INT DEFAULT 0;
+    DECLARE v_stock_actual INT;
+    DECLARE v_stock_reservado INT;
+    DECLARE v_stock_disponible INT;
+    DECLARE v_tiene_error BOOLEAN DEFAULT FALSE;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET v_stock_actual = NULL;
     
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
@@ -89,37 +95,61 @@ BEGIN
             SET v_json_array_size = JSON_LENGTH(p_json_detalle);
             SET v_idx = 0;
             
-            WHILE v_idx < v_json_array_size DO
+            detalle_loop: WHILE v_idx < v_json_array_size DO
                 SET v_id_producto = JSON_UNQUOTE(JSON_EXTRACT(p_json_detalle, CONCAT('$[', v_idx, '].id_producto')));
                 SET v_cantidad = JSON_UNQUOTE(JSON_EXTRACT(p_json_detalle, CONCAT('$[', v_idx, '].cantidad')));
                 SET v_precio_unitario = JSON_UNQUOTE(JSON_EXTRACT(p_json_detalle, CONCAT('$[', v_idx, '].precio_unitario')));
                 SET v_descuento_item = JSON_UNQUOTE(JSON_EXTRACT(p_json_detalle, CONCAT('$[', v_idx, '].descuento_item')));
                 
+                SET v_stock_actual = NULL;
+                SET v_stock_reservado = 0;
+                SET v_stock_disponible = 0;
+
+                SELECT stock_actual, stock_reservado
+                INTO v_stock_actual, v_stock_reservado
+                FROM inventario
+                WHERE id_tienda = p_id_tienda AND id_producto = v_id_producto
+                FOR UPDATE;
+
+                IF v_stock_actual IS NULL THEN
+                    SET v_tiene_error = TRUE;
+                    SET p_codigo_error = 2;
+                    SET p_mensaje = CONCAT('No existe inventario para el producto ', v_id_producto);
+                    LEAVE detalle_loop;
+                END IF;
+
+                SET v_stock_disponible = v_stock_actual - v_stock_reservado;
+
+                IF v_stock_disponible < v_cantidad THEN
+                    SET v_tiene_error = TRUE;
+                    SET p_codigo_error = 3;
+                    SET p_mensaje = CONCAT('Stock insuficiente para el producto ', v_id_producto);
+                    LEAVE detalle_loop;
+                END IF;
+
                 INSERT INTO detalle_venta (id_venta, id_producto, cantidad, precio_unitario, descuento_item)
                 VALUES (v_id_venta, v_id_producto, v_cantidad, v_precio_unitario, v_descuento_item);
                 
                 INSERT INTO movimientos_almacen_detalle (id_movimiento, id_producto, cantidad, precio_unitario)
                 VALUES (v_id_movimiento, v_id_producto, v_cantidad, v_precio_unitario);
                 
-                UPDATE inventario SET stock_actual = stock_actual - v_cantidad
+                UPDATE inventario
+                SET stock_reservado = GREATEST(stock_reservado - v_cantidad, 0),
+                    stock_actual = stock_actual - v_cantidad
                 WHERE id_tienda = p_id_tienda AND id_producto = v_id_producto;
                 
-                SET v_rows_affected = ROW_COUNT();
-                
-                IF v_rows_affected = 0 THEN
-                    INSERT INTO inventario (id_tienda, id_producto, stock_actual, stock_reservado)
-                    VALUES (p_id_tienda, v_id_producto, -v_cantidad, 0);
-                END IF;
-                
                 SET v_idx = v_idx + 1;
-            END WHILE;
+            END WHILE detalle_loop;
             
-            COMMIT;
-            
-            SET p_id_venta_out = v_id_venta;
-            SET p_id_movimiento_out = v_id_movimiento;
-            SET p_codigo_error = 0;
-            SET p_mensaje = 'Venta registrada exitosamente';
+            IF v_tiene_error THEN
+                ROLLBACK;
+            ELSE
+                COMMIT;
+                SET p_id_venta_out = v_id_venta;
+                SET p_id_movimiento_out = v_id_movimiento;
+                SET p_codigo_error = 0;
+                SET p_mensaje = 'Venta registrada exitosamente';
+            END IF;
         END IF;
     END IF;
     

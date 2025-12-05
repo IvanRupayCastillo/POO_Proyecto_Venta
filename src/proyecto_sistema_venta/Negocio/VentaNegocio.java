@@ -221,6 +221,13 @@ public class VentaNegocio {
     }
 
     /**
+     * Busca una venta por su ID
+     */
+    public Venta buscarPorId(int idVenta) {
+        return ventaDAO.buscarPorId(idVenta);
+    }
+
+    /**
      * Lista todas las ventas, opcionalmente filtradas por texto de búsqueda
      */
     public javax.swing.table.TableModel listar(String texto) {
@@ -236,7 +243,7 @@ public class VentaNegocio {
         
         try {
             // Obtener todas las ventas (por ahora de todas las tiendas)
-            // TODO: Filtrar por tienda del usuario logueado
+            //Filtrar por tienda del usuario logueado
             List<Venta> ventas = ventaDAO.listarPorTienda(1); // Tienda 1 por defecto
             
             for (Venta v : ventas) {

@@ -47,6 +47,12 @@ public class Frm_Venta extends javax.swing.JInternalFrame {
                    BtnQuitarProductoActionPerformed(evt);
                }
            });
+           // Add action listener for BtnVerVenta
+           BtnVerVenta.addActionListener(new java.awt.event.ActionListener() {
+               public void actionPerformed(java.awt.event.ActionEvent evt) {
+                   BtnVerVentaActionPerformed(evt);
+               }
+           });
            this.contenedor=frmP;
           this.CONTROL = new VentaNegocio();
           this.doc = new VentaNegocio();
@@ -556,6 +562,33 @@ public class Frm_Venta extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_BtnQuitarProductoActionPerformed
 
+    private void BtnVerVentaActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("LOG: BtnVerVentaActionPerformed - Inicio");
+        if (TblVenta.getSelectedRowCount() == 1) {
+            int fila = TblVenta.getSelectedRow();
+            int idVenta = Integer.parseInt(TblVenta.getValueAt(fila, 0).toString());
+            System.out.println("LOG: ID Venta seleccionada: " + idVenta);
+            this.venta = CONTROL.buscarPorId(idVenta);
+            if (this.venta != null) {
+                System.out.println("LOG: Venta encontrada: " + this.venta.getIdVenta());
+                // Show details
+                String detalles = "ID: " + this.venta.getIdVenta() + "\n" +
+                                  "Tipo: " + this.venta.getTipoComprobante() + "\n" +
+                                  "Serie: " + this.venta.getSerieComprobante() + "\n" +
+                                  "Número: " + this.venta.getNumeroComprobante() + "\n" +
+                                  "Fecha: " + this.venta.getFechaVenta() + "\n" +
+                                  "Total: S/ " + this.venta.getTotal();
+                JOptionPane.showMessageDialog(this, detalles, "Detalles de Venta", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                System.out.println("LOG: Venta no encontrada");
+                JOptionPane.showMessageDialog(this, "Venta no encontrada", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar una venta de la tabla", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        }
+        System.out.println("LOG: BtnVerVentaActionPerformed - Fin");
+    }
+
     /**
      * Agrega un producto a la tabla de detalle de venta
      */
@@ -711,6 +744,17 @@ public class Frm_Venta extends javax.swing.JInternalFrame {
         
         try {
             System.out.println("LOG: Creando objeto Venta...");
+            SessionManager sessionManager = SessionManager.getInstance();
+            Integer idUsuarioActual = sessionManager.getCurrentUserId();
+            Integer idTiendaActual = sessionManager.getCurrentStoreId();
+
+            if (idUsuarioActual == null || idTiendaActual == null) {
+                JOptionPane.showMessageDialog(this,
+                    "No se pudo identificar al usuario o tienda actual. Inicie sesión nuevamente.",
+                    "Sesión no disponible",
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             // Crear objeto Venta
             Venta venta = new Venta();
             System.out.println("LOG: Tipo comprobante: " + CbxTipoComprobante.getSelectedItem());
@@ -719,9 +763,9 @@ public class Frm_Venta extends javax.swing.JInternalFrame {
             venta.setNumeroComprobante(numero);
             venta.setFechaVenta(java.time.LocalDate.now());
             venta.setHoraVenta(java.time.LocalTime.now());
-            venta.setIdTienda(1); // TODO: Obtener de sesión o configuración
+            venta.setIdTienda(idTiendaActual);
             venta.setIdCliente(id_cliente_seleccionado);
-            venta.setIdUsuarioVendedor(1); // TODO: Obtener de sesión
+            venta.setIdUsuarioVendedor(idUsuarioActual);
             
             // Obtener valores de los campos
             double subtotal = Double.parseDouble(TxtSubtotal.getText());
@@ -732,8 +776,8 @@ public class Frm_Venta extends javax.swing.JInternalFrame {
             venta.setDescuento(0.0); // Por ahora sin descuento global
             venta.setIgv(totalImpuesto);
             venta.setTotal(total);
-            venta.setMetodoPago("EFECTIVO"); // TODO: Agregar campo para método de pago
-            venta.setObservaciones(""); // TODO: Agregar campo para observaciones
+            venta.setMetodoPago("EFECTIVO"); // Agregar campo para método de pago
+            venta.setObservaciones(""); // Agregar campo para observaciones
             
             // Crear lista de detalles
             List<DetalleVenta> detalles = new ArrayList<>();
