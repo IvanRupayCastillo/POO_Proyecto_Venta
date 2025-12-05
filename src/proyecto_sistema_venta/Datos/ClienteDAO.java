@@ -46,6 +46,7 @@ public class ClienteDAO implements ICliente {
                 cliente.setTelefono(rs.getString("telefono"));
                 cliente.setEmail(rs.getString("email"));
                 cliente.setActivo(rs.getBoolean("activo"));
+                try { cliente.setIdTienda(rs.getInt("id_tienda")); } catch (SQLException ignored) {}
                 lista.add(cliente);
             }
             ps.close();
@@ -60,12 +61,51 @@ public class ClienteDAO implements ICliente {
         return lista;
     }
 
+    /**
+     * Lista clientes filtrando por tienda.
+     */
+    public List<Cliente> listarPorTienda(String texto, int idTienda) {
+        List<Cliente> lista = new ArrayList<>();
+        try {
+            ps = CNX.conectar().prepareStatement(
+                "SELECT * FROM clientes WHERE id_tienda = ? AND (razon_social LIKE ? OR numero_documento LIKE ?) ORDER BY razon_social ASC"
+            );
+            ps.setInt(1, idTienda);
+            ps.setString(2, "%" + texto + "%");
+            ps.setString(3, "%" + texto + "%");
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Cliente cliente = new Cliente();
+                cliente.setId_cliente(rs.getInt("id_cliente"));
+                cliente.setTipo_documento(rs.getString("tipo_documento"));
+                cliente.setNumero_documento(rs.getString("numero_documento"));
+                cliente.setRazon_social(rs.getString("razon_social"));
+                cliente.setDireccion(rs.getString("direccion"));
+                cliente.setTelefono(rs.getString("telefono"));
+                cliente.setEmail(rs.getString("email"));
+                cliente.setActivo(rs.getBoolean("activo"));
+                cliente.setIdTienda(idTienda);
+                lista.add(cliente);
+            }
+            ps.close();
+            rs.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al listar clientes por tienda: " + e.getMessage());
+        } finally {
+            ps = null;
+            rs = null;
+            CNX.desconectar();
+        }
+        return lista;
+    }
+
     @Override
     public boolean insertar(Cliente obj) {
         resp = false;
         try {
             ps = CNX.conectar().prepareStatement(
-                "INSERT INTO clientes (tipo_documento, numero_documento, razon_social, direccion, telefono, email, activo) VALUES (?,?,?,?,?,?,?)"
+                "INSERT INTO clientes (tipo_documento, numero_documento, razon_social, direccion, telefono, email, activo, id_tienda) VALUES (?,?,?,?,?,?,?,?)"
             );
             ps.setString(1, obj.getTipo_documento());
             ps.setString(2, obj.getNumero_documento());
@@ -74,6 +114,7 @@ public class ClienteDAO implements ICliente {
             ps.setString(5, obj.getTelefono());
             ps.setString(6, obj.getEmail());
             ps.setBoolean(7, obj.isActivo());
+            ps.setInt(8, obj.getIdTienda() == null ? 0 : obj.getIdTienda());
             
             if (ps.executeUpdate() > 0) {
                 resp = true;
@@ -93,7 +134,7 @@ public class ClienteDAO implements ICliente {
         resp = false;
         try {
             ps = CNX.conectar().prepareStatement(
-                "UPDATE clientes SET tipo_documento=?, numero_documento=?, razon_social=?, direccion=?, telefono=?, email=?, activo=? WHERE id_cliente=?"
+                "UPDATE clientes SET tipo_documento=?, numero_documento=?, razon_social=?, direccion=?, telefono=?, email=?, activo=?, id_tienda=? WHERE id_cliente=?"
             );
             ps.setString(1, obj.getTipo_documento());
             ps.setString(2, obj.getNumero_documento());
@@ -102,7 +143,8 @@ public class ClienteDAO implements ICliente {
             ps.setString(5, obj.getTelefono());
             ps.setString(6, obj.getEmail());
             ps.setBoolean(7, obj.isActivo());
-            ps.setInt(8, obj.getId_cliente());
+            ps.setInt(8, obj.getIdTienda() == null ? 0 : obj.getIdTienda());
+            ps.setInt(9, obj.getId_cliente());
             
             if (ps.executeUpdate() > 0) {
                 resp = true;

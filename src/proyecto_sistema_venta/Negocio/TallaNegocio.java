@@ -43,15 +43,42 @@ public class TallaNegocio {
         }
         return this.dtm;
     }
+    
+    /**
+     * Lista las tallas por tienda y las convierte a formato de tabla
+     * @param texto Texto para filtrar
+     * @param idTienda ID de la tienda
+     * @return DefaultTableModel para mostrar en JTable
+     */
+    public DefaultTableModel listarPorTienda(String texto, int idTienda) {
+        List<Talla> lista = new ArrayList<>();
+        lista.addAll(DATOS.listarPorTienda(texto, idTienda));
+        
+        String[] titulos = {"ID", "Tipo", "Nombre", "Orden", "Estado"};
+        this.dtm = new DefaultTableModel(null, titulos);
+        
+        String[] registro = new String[5];
+        
+        for (Talla item : lista) {
+            registro[0] = Integer.toString(item.getIdTalla());
+            registro[1] = item.getTipoTalla();
+            registro[2] = item.getNombreTalla();
+            registro[3] = Integer.toString(item.getOrdenVisualizacion());
+            registro[4] = item.isActivo() ? "Activo" : "Inactivo";
+            this.dtm.addRow(registro);
+        }
+        return this.dtm;
+    }
 
     /**
      * Inserta una nueva talla con validaciones
      * @param tipoTalla Tipo de talla (NUMERICA, LETRAS, ESPECIAL)
      * @param nombreTalla Nombre de la talla
      * @param ordenVisualizacion Orden de visualización
+     * @param idTienda ID de la tienda
      * @return Mensaje de resultado
      */
-    public String insertar(String tipoTalla, String nombreTalla, int ordenVisualizacion) {
+    public String insertar(String tipoTalla, String nombreTalla, int ordenVisualizacion, Integer idTienda) {
         // Validaciones
         if (tipoTalla == null || tipoTalla.trim().length() == 0) {
             return "Debe seleccionar un tipo de talla";
@@ -77,6 +104,7 @@ public class TallaNegocio {
         obj.setTipoTalla(tipoTalla);
         obj.setNombreTalla(nombreTalla.trim().toUpperCase());
         obj.setOrdenVisualizacion(ordenVisualizacion);
+        obj.setIdTienda(idTienda);
         obj.setActivo(true);
         
         if (DATOS.insertar(obj)) {
@@ -92,11 +120,12 @@ public class TallaNegocio {
      * @param tipoTalla Tipo de talla
      * @param nombreTalla Nombre de la talla
      * @param ordenVisualizacion Orden de visualización
+     * @param idTienda ID de la tienda
      * @param activo Estado de la talla
      * @param nombreAnt Nombre anterior para validar cambios
      * @return Mensaje de resultado
      */
-    public String actualizar(int id, String tipoTalla, String nombreTalla, int ordenVisualizacion, boolean activo, String nombreAnt) {
+    public String actualizar(int id, String tipoTalla, String nombreTalla, int ordenVisualizacion, Integer idTienda, boolean activo, String nombreAnt) {
         // Validaciones
         if (tipoTalla == null || tipoTalla.trim().length() == 0) {
             return "Debe seleccionar un tipo de talla";
@@ -124,6 +153,7 @@ public class TallaNegocio {
         obj.setTipoTalla(tipoTalla);
         obj.setNombreTalla(nombreTalla.trim().toUpperCase());
         obj.setOrdenVisualizacion(ordenVisualizacion);
+        obj.setIdTienda(idTienda);
         obj.setActivo(activo);
 
         if (DATOS.actualizar(obj)) {

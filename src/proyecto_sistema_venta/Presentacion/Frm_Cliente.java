@@ -17,17 +17,19 @@ public class Frm_Cliente extends javax.swing.JInternalFrame {
      */
     
     private ClienteNegocio CONTROL;
-    private ClienteNegocio doc;
     private String accion;
     private String resp;
     private int idcliente;
+    private final Integer idTiendaActual;
     
     
     
     public Frm_Cliente() {
+        SessionManager sessionManager = SessionManager.getInstance();
+        this.idTiendaActual = sessionManager.getCurrentStoreId();
+
         initComponents();
         this.CONTROL = new ClienteNegocio();
-        this.doc = new ClienteNegocio();       
         cargarTiposDocumento();
         this.listar("");
         TabCliente.setEnabledAt(0, true);
@@ -36,7 +38,14 @@ public class Frm_Cliente extends javax.swing.JInternalFrame {
     }
     
     private void listar(String texto) {
-        TblCliente.setModel(this.CONTROL.listar(texto));
+        if (idTiendaActual == null) {
+            JOptionPane.showMessageDialog(this,
+                "No se pudo determinar la tienda del usuario. Inicie sesión nuevamente.",
+                "Sesión no disponible",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        TblCliente.setModel(this.CONTROL.listarPorTienda(texto, idTiendaActual));
     }
     
     private void limpiar() {     
@@ -60,7 +69,7 @@ public class Frm_Cliente extends javax.swing.JInternalFrame {
 
         jInternalFrame1 = new javax.swing.JInternalFrame();
         jPanel2 = new javax.swing.JPanel();
-        // jTabbedPane3 = new javax.swing.JTabbedPane(); // Removed unused variable
+        //jTabbedPane3 = new javax.swing.JTabbedPane();
         jPanel3 = new javax.swing.JPanel();
         TabCliente = new javax.swing.JTabbedPane();
         TabListado = new javax.swing.JPanel();
@@ -319,7 +328,7 @@ public class Frm_Cliente extends javax.swing.JInternalFrame {
                 .addGroup(TabMantenimientoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(BtnGuardar)
                     .addComponent(BtnCerrar))
-                .addContainerGap(55, Short.MAX_VALUE))
+                .addContainerGap(80, Short.MAX_VALUE))
         );
 
         TabCliente.addTab("Mantenimiento", TabMantenimiento);
@@ -337,8 +346,8 @@ public class Frm_Cliente extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(24, 24, 24)
-                .addComponent(TabCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 603, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(42, Short.MAX_VALUE))
+                .addComponent(TabCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(17, Short.MAX_VALUE))
         );
 
         pack();
@@ -373,9 +382,9 @@ public class Frm_Cliente extends javax.swing.JInternalFrame {
         boolean activo = this.ChkEstado.isSelected();
    
         if (this.accion.equals("guardar")) {        
-            resp = this.CONTROL.insertar(tipoDocumento, numeroDocumento, razonSocial, direccion, telefono, email);      
+            resp = this.CONTROL.insertar(tipoDocumento, numeroDocumento, razonSocial, direccion, telefono, email, idTiendaActual);      
         } else if (this.accion.equals("editar")) {        
-            resp = this.CONTROL.actualizar(this.idcliente, tipoDocumento, numeroDocumento, razonSocial, direccion, telefono, email, activo); 
+            resp = this.CONTROL.actualizar(this.idcliente, tipoDocumento, numeroDocumento, razonSocial, direccion, telefono, email, activo, idTiendaActual); 
         }
     
         System.out.println("Respuesta de la operación (" + this.accion + "): " + resp);   
@@ -424,7 +433,7 @@ public class Frm_Cliente extends javax.swing.JInternalFrame {
             TabCliente.setSelectedIndex(1);
             this.accion = "editar";
             BtnGuardar.setText("Editar");
-        }else {
+        } else {
         JOptionPane.showMessageDialog(null, "Debe seleccionar un cliente de la tabla para editar.", "Error de Selección", JOptionPane.WARNING_MESSAGE);
     }
     }//GEN-LAST:event_BtnEditarActionPerformed
@@ -488,7 +497,7 @@ public class Frm_Cliente extends javax.swing.JInternalFrame {
         CbxTipoDocumento.removeAllItems();
         CbxTipoDocumento.addItem("--SELECCIONE--");
 
-        for (String t : doc.listarTiposDocumento()) {
+        for (String t : this.CONTROL.listarTiposDocumento()) {
         CbxTipoDocumento.addItem(t);
         }
         CbxTipoDocumento.setSelectedIndex(0);
@@ -527,6 +536,8 @@ public class Frm_Cliente extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    @SuppressWarnings("unused")
+    private javax.swing.JTabbedPane jTabbedPane3;
     // End of variables declaration//GEN-END:variables
 
    

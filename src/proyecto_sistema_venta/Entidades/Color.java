@@ -12,6 +12,7 @@ public class Color {
     private int idColor;
     private String codigoColor;
     private String nombreColor;
+    private Integer idTienda;
     private boolean activo;
     private Timestamp createdAt;
     private Timestamp updatedAt;
@@ -21,19 +22,21 @@ public class Color {
     }
 
     // Constructor sin timestamps (para inserción)
-    public Color(int idColor, String codigoColor, String nombreColor, boolean activo) {
+    public Color(int idColor, String codigoColor, String nombreColor, Integer idTienda, boolean activo) {
         this.idColor = idColor;
         this.codigoColor = codigoColor;
         this.nombreColor = nombreColor;
+        this.idTienda = idTienda;
         this.activo = activo;
     }
 
     // Constructor completo con timestamps
-    public Color(int idColor, String codigoColor, String nombreColor, boolean activo, 
+    public Color(int idColor, String codigoColor, String nombreColor, Integer idTienda, boolean activo, 
                 Timestamp createdAt, Timestamp updatedAt) {
         this.idColor = idColor;
         this.codigoColor = codigoColor;
         this.nombreColor = nombreColor;
+        this.idTienda = idTienda;
         this.activo = activo;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -62,6 +65,14 @@ public class Color {
 
     public void setNombreColor(String nombreColor) {
         this.nombreColor = nombreColor;
+    }
+
+    public Integer getIdTienda() {
+        return idTienda;
+    }
+
+    public void setIdTienda(Integer idTienda) {
+        this.idTienda = idTienda;
     }
 
     public boolean isActivo() {

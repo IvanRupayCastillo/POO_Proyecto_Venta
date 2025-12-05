@@ -4,8 +4,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
-import proyecto_sistema_venta.Entidades.Producto;
 import proyecto_sistema_venta.Negocio.ProductoNegocio;
 
 public class FrmListarProductos extends JInternalFrame {
@@ -14,8 +12,20 @@ public class FrmListarProductos extends JInternalFrame {
     private JButton btnRefrescar;
     private JScrollPane jScrollPane1;
     private ProductoNegocio productoNegocio;
+    private Integer idTiendaActual;
 
     public FrmListarProductos() {
+        // Obtener tienda del usuario logueado
+        SessionManager sessionManager = SessionManager.getInstance();
+        this.idTiendaActual = sessionManager.getCurrentStoreId();
+        
+        if (idTiendaActual == null) {
+            JOptionPane.showMessageDialog(this,
+                "Error: No hay una sesión activa. Por favor, inicie sesión nuevamente.",
+                "Error de Sesión", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
         productoNegocio = new ProductoNegocio();
         initComponents();
         cargarProductos();
@@ -85,10 +95,9 @@ public class FrmListarProductos extends JInternalFrame {
         DefaultTableModel model = (DefaultTableModel) tblProductos.getModel();
         model.setRowCount(0); // Limpiar tabla
         try {
-            List<Producto> productos = productoNegocio.obtenerTodosProductos();
-            for (Producto p : productos) {
-                model.addRow(new Object[]{p.getIdProducto(), p.getNombreProducto(), p.getDescripcion(), p.getPrecioVentaMenor(), p.getStockMinimo()});
-            }
+            // Usar listarPorTienda en lugar de obtenerTodosProductos
+            model = (DefaultTableModel) productoNegocio.listarPorTienda("", idTiendaActual);
+            tblProductos.setModel(model);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al cargar productos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();

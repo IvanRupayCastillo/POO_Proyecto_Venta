@@ -27,6 +27,16 @@ public class ClienteNegocio {
     public DefaultTableModel listar(String texto) {
         List<Cliente> lista = new ArrayList<>();
         lista.addAll(DATOS.listar(texto));
+        return buildTable(lista);
+    }
+
+    public DefaultTableModel listarPorTienda(String texto, int idTienda) {
+        List<Cliente> lista = new ArrayList<>();
+        lista.addAll(DATOS.listarPorTienda(texto, idTienda));
+        return buildTable(lista);
+    }
+
+    private DefaultTableModel buildTable(List<Cliente> lista) {
         
         String[] titulos = {"ID", "Tipo Doc.", "Nro. Documento", "Razón Social", "Dirección", "Teléfono", "Email", "Estado"};
         this.dtm = new DefaultTableModel(null, titulos);
@@ -51,7 +61,7 @@ public class ClienteNegocio {
      * Inserta un nuevo cliente con validaciones
      */
     public String insertar(String tipoDocumento, String numeroDocumento, String razonSocial, 
-                          String direccion, String telefono, String email) {
+                          String direccion, String telefono, String email, Integer idTienda) {
         // Validaciones
         if (tipoDocumento == null || tipoDocumento.trim().isEmpty()) {
             return "El tipo de documento es obligatorio";
@@ -86,6 +96,7 @@ public class ClienteNegocio {
         obj.setTelefono(telefono != null ? telefono.trim() : null);
         obj.setEmail(email != null ? email.trim() : null);
         obj.setActivo(true);
+        obj.setIdTienda(idTienda);
         
         if (DATOS.insertar(obj)) {
             return "OK";
@@ -98,7 +109,7 @@ public class ClienteNegocio {
      * Actualiza un cliente existente
      */
     public String actualizar(int id, String tipoDocumento, String numeroDocumento, String razonSocial,
-                            String direccion, String telefono, String email, boolean activo) {
+                            String direccion, String telefono, String email, boolean activo, Integer idTienda) {
         // Validaciones
         if (tipoDocumento == null || tipoDocumento.trim().isEmpty()) {
             return "El tipo de documento es obligatorio";
@@ -121,6 +132,7 @@ public class ClienteNegocio {
         obj.setTelefono(telefono != null ? telefono.trim() : null);
         obj.setEmail(email != null ? email.trim() : null);
         obj.setActivo(activo);
+        obj.setIdTienda(idTienda);
         
         if (DATOS.actualizar(obj)) {
             return "OK";

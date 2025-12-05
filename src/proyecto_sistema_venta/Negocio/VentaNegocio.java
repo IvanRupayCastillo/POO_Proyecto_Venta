@@ -230,7 +230,7 @@ public class VentaNegocio {
     /**
      * Lista todas las ventas, opcionalmente filtradas por texto de búsqueda
      */
-    public javax.swing.table.TableModel listar(String texto) {
+    public javax.swing.table.TableModel listar(String texto, int idTienda) {
         javax.swing.table.DefaultTableModel model = new javax.swing.table.DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -242,9 +242,8 @@ public class VentaNegocio {
         model.setColumnIdentifiers(columnas);
         
         try {
-            // Obtener todas las ventas (por ahora de todas las tiendas)
-            //Filtrar por tienda del usuario logueado
-            List<Venta> ventas = ventaDAO.listarPorTienda(1); // Tienda 1 por defecto
+            // Obtener ventas de la tienda del usuario logueado
+            List<Venta> ventas = ventaDAO.listarPorTienda(idTienda);
             
             for (Venta v : ventas) {
                 Object[] fila = new Object[4];

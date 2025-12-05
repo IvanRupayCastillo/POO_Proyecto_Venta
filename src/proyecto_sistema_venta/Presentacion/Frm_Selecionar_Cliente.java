@@ -10,6 +10,7 @@ import proyecto_sistema_venta.Entidades.Cliente;
 import proyecto_sistema_venta.Negocio.ClienteNegocio;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+//import proyecto_sistema_venta.Presentacion.SessionManager;
 
 /** 
  *
@@ -19,6 +20,7 @@ public class Frm_Selecionar_Cliente extends javax.swing.JDialog {
 
     private final ClienteNegocio CONTROL;
     private Cliente clienteSeleccionado;
+    private final Integer idTiendaActual;
     
     /**
      * Creates new form Frm_Selecionar_Cliente
@@ -30,6 +32,17 @@ public class Frm_Selecionar_Cliente extends javax.swing.JDialog {
         this.clienteSeleccionado = null;
         this.setLocationRelativeTo(null);
         this.setTitle("Seleccionar Cliente");
+
+        SessionManager sessionManager = SessionManager.getInstance();
+        this.idTiendaActual = sessionManager.getCurrentStoreId();
+        if (idTiendaActual == null) {
+            JOptionPane.showMessageDialog(this,
+                "No se pudo determinar la tienda del usuario. Inicie sesión nuevamente.",
+                "Sesión no disponible",
+                JOptionPane.ERROR_MESSAGE);
+            this.dispose();
+            return;
+        }
         
         // Cargar todos los clientes al inicio
         this.listar("");
@@ -62,7 +75,7 @@ public class Frm_Selecionar_Cliente extends javax.swing.JDialog {
      * Lista los clientes según el texto de búsqueda
      */
     private void listar(String texto) {
-        TblListadoCliente.setModel(this.CONTROL.listar(texto));
+        TblListadoCliente.setModel(this.CONTROL.listarPorTienda(texto, idTiendaActual));
     }
     
     /**

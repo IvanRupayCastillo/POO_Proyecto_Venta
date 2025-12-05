@@ -42,14 +42,40 @@ public class ColorNegocio {
         }
         return this.dtm;
     }
+    
+    /**
+     * Lista los colores por tienda y los convierte a formato de tabla
+     * @param texto Texto para filtrar
+     * @param idTienda ID de la tienda
+     * @return DefaultTableModel para mostrar en JTable
+     */
+    public DefaultTableModel listarPorTienda(String texto, int idTienda) {
+        List<Color> lista = new ArrayList<>();
+        lista.addAll(DATOS.listarPorTienda(texto, idTienda));
+        
+        String[] titulos = {"ID", "Código", "Nombre", "Estado"};
+        this.dtm = new DefaultTableModel(null, titulos);
+        
+        String[] registro = new String[4];
+        
+        for (Color item : lista) {
+            registro[0] = Integer.toString(item.getIdColor());
+            registro[1] = item.getCodigoColor();
+            registro[2] = item.getNombreColor();
+            registro[3] = item.isActivo() ? "Activo" : "Inactivo";
+            this.dtm.addRow(registro);
+        }
+        return this.dtm;
+    }
 
     /**
      * Inserta un nuevo color con validaciones
      * @param codigo Código del color
      * @param nombre Nombre del color
+     * @param idTienda ID de la tienda
      * @return Mensaje de resultado
      */
-    public String insertar(String codigo, String nombre) {
+    public String insertar(String codigo, String nombre, Integer idTienda) {
         // Validaciones
         if (codigo.trim().length() == 0 || codigo.trim().length() > 20) {
             return "El código es obligatorio y debe tener máximo 20 caracteres";
@@ -66,6 +92,7 @@ public class ColorNegocio {
         Color obj = new Color();
         obj.setCodigoColor(codigo.trim().toUpperCase());
         obj.setNombreColor(nombre.trim());
+        obj.setIdTienda(idTienda);
         obj.setActivo(true);
         
         if (DATOS.insertar(obj)) {
@@ -80,10 +107,11 @@ public class ColorNegocio {
      * @param id ID del color
      * @param codigo Código del color
      * @param nombre Nombre del color
+     * @param idTienda ID de la tienda
      * @param activo Estado del color
      * @return Mensaje de resultado
      */
-    public String actualizar(int id, String codigo, String nombre, boolean activo) {
+    public String actualizar(int id, String codigo, String nombre, Integer idTienda, boolean activo) {
         // Validaciones
         if (codigo.trim().length() == 0 || codigo.trim().length() > 20) {
             return "El código es obligatorio y debe tener máximo 20 caracteres";
@@ -97,6 +125,7 @@ public class ColorNegocio {
         obj.setIdColor(id);
         obj.setCodigoColor(codigo.trim().toUpperCase());
         obj.setNombreColor(nombre.trim());
+        obj.setIdTienda(idTienda);
         obj.setActivo(activo);
         
         if (DATOS.actualizar(obj)) {

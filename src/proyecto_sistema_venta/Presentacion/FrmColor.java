@@ -11,6 +11,7 @@ public class FrmColor extends  javax.swing.JInternalFrame {
     private final ColorNegocio CONTROL;
     private String accion;
     private String nombreAnt;
+    private Integer idTiendaActual;
     
     /**
      * Constructor
@@ -19,6 +20,18 @@ public class FrmColor extends  javax.swing.JInternalFrame {
         initComponents();
         this.CONTROL = new ColorNegocio();
         this.accion = "guardar";
+        
+        // Obtener tienda del usuario logueado
+        SessionManager sessionManager = SessionManager.getInstance();
+        this.idTiendaActual = sessionManager.getCurrentStoreId();
+        
+        if (idTiendaActual == null) {
+            JOptionPane.showMessageDialog(this,
+                "Error: No hay una sesión activa. Por favor, inicie sesión nuevamente.",
+                "Error de Sesión", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
         this.listar("");
         this.ocultarColumnas();
         TxtTotal.setText("Total de registros: " + this.CONTROL.total());
@@ -37,7 +50,11 @@ public class FrmColor extends  javax.swing.JInternalFrame {
      * Lista los colores en la tabla
      */
     private void listar(String texto) {
-        TblDatos.setModel(this.CONTROL.listar(texto));
+        if (idTiendaActual == null) {
+            JOptionPane.showMessageDialog(this, "Error: No hay sesión activa", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        TblDatos.setModel(this.CONTROL.listarPorTienda(texto, idTiendaActual));
         TableRowSorter<TableModel> orden = new TableRowSorter<>(TblDatos.getModel());
         TblDatos.setRowSorter(orden);
         this.ocultarColumnas();
@@ -324,10 +341,15 @@ public class FrmColor extends  javax.swing.JInternalFrame {
             TxtNombre.requestFocus();
             return;
         }
+        
+        if (idTiendaActual == null) {
+            JOptionPane.showMessageDialog(this, "Error: No hay sesión activa", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         String resp;
         if (this.accion.equals("guardar")) {
-            resp = this.CONTROL.insertar(TxtCodigo.getText(), TxtNombre.getText());
+            resp = this.CONTROL.insertar(TxtCodigo.getText(), TxtNombre.getText(), idTiendaActual);
             if (resp.equals("OK")) {
                 this.limpiar();
                 this.listar("");
@@ -345,6 +367,7 @@ public class FrmColor extends  javax.swing.JInternalFrame {
                 Integer.parseInt(TxtId.getText()),
                 TxtCodigo.getText(),
                 TxtNombre.getText(),
+                idTiendaActual,
                 ChkActivo.isSelected()
             );
             if (resp.equals("OK")) {

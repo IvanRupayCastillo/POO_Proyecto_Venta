@@ -9,7 +9,7 @@ import proyecto_sistema_venta.Entidades.Color;
 import proyecto_sistema_venta.Entidades.Talla;
 import proyecto_sistema_venta.Datos.InventarioDAO;
 import proyecto_sistema_venta.Entidades.Producto;
-import proyecto_sistema_venta.Presentacion.SessionManager;
+//import proyecto_sistema_venta.Presentacion.SessionManager;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;

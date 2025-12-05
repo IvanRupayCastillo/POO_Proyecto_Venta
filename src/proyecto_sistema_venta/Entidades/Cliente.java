@@ -9,6 +9,7 @@ public class Cliente {
     private String telefono;
     private String email;
     private boolean activo;
+    private Integer idTienda;
 
     public Cliente() {
     }
@@ -75,5 +76,13 @@ public class Cliente {
 
     public void setActivo(boolean activo) {
         this.activo = activo;
+    }
+
+    public Integer getIdTienda() {
+        return idTienda;
+    }
+
+    public void setIdTienda(Integer idTienda) {
+        this.idTienda = idTienda;
     }
 }

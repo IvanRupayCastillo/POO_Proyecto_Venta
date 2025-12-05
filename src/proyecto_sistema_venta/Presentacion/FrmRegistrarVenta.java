@@ -126,7 +126,19 @@ public class FrmRegistrarVenta extends JInternalFrame {
 
     private void cargarProductosDisponibles() {
         try {
-            productosDisponibles = productoNegocio.obtenerTodosProductos();
+            // Obtener tienda del usuario logueado
+            SessionManager sessionManager = SessionManager.getInstance();
+            Integer idTiendaActual = sessionManager.getCurrentStoreId();
+            
+            if (idTiendaActual == null) {
+                JOptionPane.showMessageDialog(this,
+                    "Error: No hay una sesión activa. No se pueden cargar productos.",
+                    "Error de Sesión", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            // Usar productos de la tienda del usuario
+            productosDisponibles = productoNegocio.obtenerProductosPorTienda(idTiendaActual);
             cmbProductos.removeAllItems();
             for (Producto p : productosDisponibles) {
                 cmbProductos.addItem(p.getNombreProducto() + " (Stock: " + p.getStockMinimo() + ")");

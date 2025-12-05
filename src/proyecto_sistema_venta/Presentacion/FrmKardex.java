@@ -9,9 +9,23 @@ import proyecto_sistema_venta.Conexion.Conexion;
 public class FrmKardex extends javax.swing.JInternalFrame {
 
     private Conexion conexion;
+    private Integer idTiendaActual;
+    private String nombreTiendaActual;
 
     public FrmKardex() {
         conexion = new Conexion();
+        
+        // Obtener tienda del usuario logueado
+        SessionManager sessionManager = SessionManager.getInstance();
+        this.idTiendaActual = sessionManager.getCurrentStoreId();
+        
+        if (idTiendaActual == null) {
+            JOptionPane.showMessageDialog(this, 
+                "Error: No hay una sesión activa. Por favor, inicie sesión nuevamente.",
+                "Error de Sesión", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
         initComponents();
         inicializarFechas();
         cargarCombos();
@@ -200,19 +214,26 @@ public class FrmKardex extends javax.swing.JInternalFrame {
 
     private void cargarTiendas() {
         cmbTienda.removeAllItems();
-        cmbTienda.addItem("TODAS");
         
-        String sql = "SELECT nombre_tienda FROM tiendas WHERE activo = 1 ORDER BY nombre_tienda";
+        // Solo cargar la tienda del usuario actual
+        String sql = "SELECT nombre_tienda FROM tiendas WHERE id_tienda = ? AND activo = 1";
         
         try (Connection conn = conexion.conectar();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
-            while (rs.next()) {
-                cmbTienda.addItem(rs.getString("nombre_tienda"));
+            pstmt.setInt(1, idTiendaActual);
+            ResultSet rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                nombreTiendaActual = rs.getString("nombre_tienda");
+                cmbTienda.addItem(nombreTiendaActual);
+                cmbTienda.setEnabled(false); // Deshabilitar combo ya que solo hay una opción
+            } else {
+                JOptionPane.showMessageDialog(this, "No se pudo cargar información de la tienda.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error al cargar tiendas: " + e.getMessage(), 
+            JOptionPane.showMessageDialog(this, "Error al cargar tienda: " + e.getMessage(), 
                                         "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
@@ -270,7 +291,7 @@ public class FrmKardex extends javax.swing.JInternalFrame {
     private void limpiarFiltros() {
         inicializarFechas();
         txtBuscar.setText("");
-        cmbTienda.setSelectedIndex(0);
+        // No resetear cmbTienda ya que solo tiene la tienda del usuario
         cmbTipoMovimiento.setSelectedIndex(0);
         cmbEstado.setSelectedIndex(0);
         cmbUsuario.setSelectedIndex(0);
@@ -292,7 +313,7 @@ public class FrmKardex extends javax.swing.JInternalFrame {
         sql.append("INNER JOIN tiendas to1 ON m.id_tienda_origen = to1.id_tienda ");
         sql.append("LEFT JOIN tiendas to2 ON m.id_tienda_destino = to2.id_tienda ");
         sql.append("INNER JOIN usuarios u ON m.id_usuario_registro = u.id_usuario ");
-        sql.append("WHERE 1=1 ");
+        sql.append("WHERE m.id_tienda_origen = ? ");
         
         // Filtro por fechas (OBLIGATORIO)
         sql.append("AND m.fecha_movimiento BETWEEN ? AND ? ");
@@ -301,12 +322,6 @@ public class FrmKardex extends javax.swing.JInternalFrame {
         String filtroDoc = txtBuscar.getText().trim();
         if (!filtroDoc.isEmpty()) {
             sql.append("AND m.numero_documento LIKE ? ");
-        }
-        
-        // Filtro por tienda
-        String tiendaSeleccionada = (String) cmbTienda.getSelectedItem();
-        if (tiendaSeleccionada != null && !tiendaSeleccionada.equals("TODAS")) {
-            sql.append("AND to1.nombre_tienda = ? ");
         }
         
         // Filtro por tipo de movimiento
@@ -334,6 +349,9 @@ public class FrmKardex extends javax.swing.JInternalFrame {
             
             int paramIndex = 1;
             
+            // Parámetro de tienda (obligatorio - filtrado por tienda del usuario)
+            pstmt.setInt(paramIndex++, idTiendaActual);
+            
             // Parámetros de fecha (obligatorios)
             pstmt.setString(paramIndex++, txtFechaDesde.getText());
             pstmt.setString(paramIndex++, txtFechaHasta.getText());
@@ -341,11 +359,6 @@ public class FrmKardex extends javax.swing.JInternalFrame {
             // Parámetro de número de documento
             if (!filtroDoc.isEmpty()) {
                 pstmt.setString(paramIndex++, "%" + filtroDoc + "%");
-            }
-            
-            // Parámetro de tienda
-            if (tiendaSeleccionada != null && !tiendaSeleccionada.equals("TODAS")) {
-                pstmt.setString(paramIndex++, tiendaSeleccionada);
             }
             
             // Parámetro de tipo de movimiento

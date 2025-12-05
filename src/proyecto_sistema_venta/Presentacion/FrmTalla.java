@@ -10,11 +10,24 @@ public class FrmTalla extends javax.swing.JInternalFrame {
     private final TallaNegocio CONTROL;
     private String accion;
     private String nombreAnt;
+    private Integer idTiendaActual;
     
     public FrmTalla() {
         initComponents();
         this.CONTROL = new TallaNegocio();
         this.accion = "guardar";
+        
+        // Obtener tienda del usuario logueado
+        SessionManager sessionManager = SessionManager.getInstance();
+        this.idTiendaActual = sessionManager.getCurrentStoreId();
+        
+        if (idTiendaActual == null) {
+            JOptionPane.showMessageDialog(this,
+                "Error: No hay una sesión activa. Por favor, inicie sesión nuevamente.",
+                "Error de Sesión", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
         this.listar("");
         this.ocultarColumnas();
         TxtTotal.setText("Total de registros: " + this.CONTROL.total());
@@ -27,7 +40,11 @@ public class FrmTalla extends javax.swing.JInternalFrame {
     }
 
     private void listar(String texto) {
-        TblDatos.setModel(this.CONTROL.listar(texto));
+        if (idTiendaActual == null) {
+            JOptionPane.showMessageDialog(this, "Error: No hay sesión activa", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        TblDatos.setModel(this.CONTROL.listarPorTienda(texto, idTiendaActual));
         TableRowSorter<DefaultTableModel> orden = new TableRowSorter<>((DefaultTableModel) TblDatos.getModel());
         TblDatos.setRowSorter(orden);
         this.ocultarColumnas();
@@ -309,6 +326,11 @@ public class FrmTalla extends javax.swing.JInternalFrame {
             TxtNombre.requestFocus();
             return;
         }
+        
+        if (idTiendaActual == null) {
+            JOptionPane.showMessageDialog(this, "Error: No hay sesión activa", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         int orden;
         try {
@@ -324,7 +346,8 @@ public class FrmTalla extends javax.swing.JInternalFrame {
             resp = this.CONTROL.insertar(
                 CmbTipo.getSelectedItem().toString(),
                 TxtNombre.getText(),
-                orden
+                orden,
+                idTiendaActual
             );
             if (resp.equals("OK")) {
                 this.limpiar();
@@ -340,6 +363,7 @@ public class FrmTalla extends javax.swing.JInternalFrame {
                 CmbTipo.getSelectedItem().toString(),
                 TxtNombre.getText(),
                 orden,
+                idTiendaActual,
                 ChkActivo.isSelected(),
                 this.nombreAnt
             );

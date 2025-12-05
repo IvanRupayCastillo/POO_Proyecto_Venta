@@ -41,6 +41,7 @@ public class TallaDAO implements ITalla {
                     rs.getString("tipo_talla"),
                     rs.getString("nombre_talla"),
                     rs.getInt("orden_visualizacion"),
+                    (Integer) rs.getObject("id_tienda"),
                     rs.getBoolean("activo")
                 ));
             }
@@ -55,18 +56,51 @@ public class TallaDAO implements ITalla {
         }
         return lista;
     }
+    
+    public List<Talla> listarPorTienda(String texto, int idTienda) {
+        List<Talla> lista = new ArrayList<>();
+        try {
+            ps = CNX.conectar().prepareStatement(
+                "SELECT * FROM tallas WHERE nombre_talla LIKE ? AND id_tienda = ? ORDER BY tipo_talla, orden_visualizacion ASC"
+            );
+            ps.setString(1, "%" + texto + "%");
+            ps.setInt(2, idTienda);
+            rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                lista.add(new Talla(
+                    rs.getInt("id_talla"),
+                    rs.getString("tipo_talla"),
+                    rs.getString("nombre_talla"),
+                    rs.getInt("orden_visualizacion"),
+                    rs.getInt("id_tienda"),
+                    rs.getBoolean("activo")
+                ));
+            }
+            ps.close();
+            rs.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al listar tallas por tienda: " + e.getMessage());
+        } finally {
+            ps = null;
+            rs = null;
+            CNX.desconectar();
+        }
+        return lista;
+    }
 
     @Override
     public boolean insertar(Talla obj) {
         resp = false;
         try {
             ps = CNX.conectar().prepareStatement(
-                "INSERT INTO tallas (tipo_talla, nombre_talla, orden_visualizacion, activo) VALUES (?,?,?,?)"
+                "INSERT INTO tallas (tipo_talla, nombre_talla, orden_visualizacion, id_tienda, activo) VALUES (?,?,?,?,?)"
             );
             ps.setString(1, obj.getTipoTalla());
             ps.setString(2, obj.getNombreTalla());
             ps.setInt(3, obj.getOrdenVisualizacion());
-            ps.setBoolean(4, obj.isActivo());
+            ps.setObject(4, obj.getIdTienda());
+            ps.setBoolean(5, obj.isActivo());
             
             if (ps.executeUpdate() > 0) {
                 resp = true;
@@ -86,13 +120,14 @@ public class TallaDAO implements ITalla {
         resp = false;
         try {
             ps = CNX.conectar().prepareStatement(
-                "UPDATE tallas SET tipo_talla=?, nombre_talla=?, orden_visualizacion=?, activo=? WHERE id_talla=?"
+                "UPDATE tallas SET tipo_talla=?, nombre_talla=?, orden_visualizacion=?, id_tienda=?, activo=? WHERE id_talla=?"
             );
             ps.setString(1, obj.getTipoTalla());
             ps.setString(2, obj.getNombreTalla());
             ps.setInt(3, obj.getOrdenVisualizacion());
-            ps.setBoolean(4, obj.isActivo());
-            ps.setInt(5, obj.getIdTalla());
+            ps.setObject(4, obj.getIdTienda());
+            ps.setBoolean(5, obj.isActivo());
+            ps.setInt(6, obj.getIdTalla());
             
             if (ps.executeUpdate() > 0) {
                 resp = true;
@@ -249,6 +284,7 @@ public class TallaDAO implements ITalla {
                     rs.getString("tipo_talla"),
                     rs.getString("nombre_talla"),
                     rs.getInt("orden_visualizacion"),
+                    (Integer) rs.getObject("id_tienda"),
                     rs.getBoolean("activo")
                 ));
             }

@@ -13,6 +13,7 @@ import proyecto_sistema_venta.Entidades.Cliente;
 import proyecto_sistema_venta.Entidades.DetalleVenta;
 import proyecto_sistema_venta.Negocio.VentaNegocio;
 import proyecto_sistema_venta.Negocio.ClienteNegocio;
+//import proyecto_sistema_venta.Presentacion.SessionManager;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -145,7 +146,16 @@ public class Frm_Venta extends javax.swing.JInternalFrame {
 
    
     private void listar(String texto) {
-        TblVenta.setModel(this.CONTROL.listar(texto));
+        SessionManager sessionManager = SessionManager.getInstance();
+        Integer idTiendaActual = sessionManager.getCurrentStoreId();
+        if (idTiendaActual == null) {
+            JOptionPane.showMessageDialog(this,
+                "No se pudo determinar la tienda del usuario. Inicie sesión nuevamente.",
+                "Sesión no disponible",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        TblVenta.setModel(this.CONTROL.listar(texto, idTiendaActual));
     }
     
     

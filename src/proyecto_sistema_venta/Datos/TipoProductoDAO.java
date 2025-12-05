@@ -42,6 +42,7 @@ public class TipoProductoDAO implements ITipoProducto {
                     rs.getString("codigo_tipo"),
                     rs.getString("nombre_tipo"),
                     rs.getString("descripcion"),
+                    (Integer) rs.getObject("id_tienda"),
                     rs.getBoolean("activo")
                 ));
             }
@@ -56,18 +57,52 @@ public class TipoProductoDAO implements ITipoProducto {
         }
         return lista;
     }
+    
+    public List<TipoProducto> listarPorTienda(String texto, int idTienda) {
+        List<TipoProducto> lista = new ArrayList<>();
+        try {
+            ps = CNX.conectar().prepareStatement(
+                "SELECT * FROM tipos_producto WHERE (nombre_tipo LIKE ? OR codigo_tipo LIKE ?) AND id_tienda = ? ORDER BY nombre_tipo ASC"
+            );
+            ps.setString(1, "%" + texto + "%");
+            ps.setString(2, "%" + texto + "%");
+            ps.setInt(3, idTienda);
+            rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                lista.add(new TipoProducto(
+                    rs.getInt("id_tipo"),
+                    rs.getString("codigo_tipo"),
+                    rs.getString("nombre_tipo"),
+                    rs.getString("descripcion"),
+                    rs.getInt("id_tienda"),
+                    rs.getBoolean("activo")
+                ));
+            }
+            ps.close();
+            rs.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al listar tipos de producto por tienda: " + e.getMessage());
+        } finally {
+            ps = null;
+            rs = null;
+            CNX.desconectar();
+        }
+        return lista;
+    }
 
     @Override
     public boolean insertar(TipoProducto obj) {
         resp = false;
         try {
             ps = CNX.conectar().prepareStatement(
-                "INSERT INTO tipos_producto (codigo_tipo, nombre_tipo, descripcion, activo) VALUES (?,?,?,?)"
+                "INSERT INTO tipos_producto (codigo_tipo, nombre_tipo, descripcion, id_tienda, activo) VALUES (?,?,?,?,?)"
             );
             ps.setString(1, obj.getCodigoTipo());
             ps.setString(2, obj.getNombreTipo());
             ps.setString(3, obj.getDescripcion());
-            ps.setBoolean(4, obj.isActivo());
+            ps.setObject(4, obj.getIdTienda());
+            ps.setBoolean(5, obj.isActivo());
             
             if (ps.executeUpdate() > 0) {
                 resp = true;
@@ -87,12 +122,14 @@ public class TipoProductoDAO implements ITipoProducto {
         resp = false;
         try {
             ps = CNX.conectar().prepareStatement(
-                "UPDATE tipos_producto SET codigo_tipo=?, nombre_tipo=?, descripcion=?, activo=? WHERE id_tipo=?"
+                "UPDATE tipos_producto SET codigo_tipo=?, nombre_tipo=?, descripcion=?, id_tienda=?, activo=? WHERE id_tipo=?"
             );
             ps.setString(1, obj.getCodigoTipo());
             ps.setString(2, obj.getNombreTipo());
             ps.setString(3, obj.getDescripcion());
-            ps.setBoolean(4, obj.isActivo());
+            ps.setObject(4, obj.getIdTienda());
+            ps.setBoolean(5, obj.isActivo());
+            ps.setInt(6, obj.getIdTipo());
             ps.setInt(5, obj.getIdTipo());
             
             if (ps.executeUpdate() > 0) {

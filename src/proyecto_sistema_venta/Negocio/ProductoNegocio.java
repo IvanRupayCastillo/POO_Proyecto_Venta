@@ -157,6 +157,10 @@ public class ProductoNegocio {
     public List<Producto> obtenerTodosProductos() {
         return DATOS.listar("");
     }
+    
+    public List<Producto> obtenerProductosPorTienda(int idTienda) {
+        return DATOS.listarPorTienda("", idTienda);
+    }
 
     public Producto buscarPorCodigo(String codigo) {
         return DATOS.buscarPorCodigo(codigo);

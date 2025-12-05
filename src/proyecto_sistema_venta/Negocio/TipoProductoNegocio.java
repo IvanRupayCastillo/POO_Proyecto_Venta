@@ -43,15 +43,42 @@ public class TipoProductoNegocio {
         }
         return this.dtm;
     }
+    
+    /**
+     * Lista los tipos de producto por tienda y los convierte a formato de tabla
+     * @param texto Texto para filtrar
+     * @param idTienda ID de la tienda
+     * @return DefaultTableModel para mostrar en JTable
+     */
+    public DefaultTableModel listarPorTienda(String texto, int idTienda) {
+        List<TipoProducto> lista = new ArrayList<>();
+        lista.addAll(DATOS.listarPorTienda(texto, idTienda));
+        
+        String[] titulos = {"ID", "Código", "Nombre", "Descripción", "Estado"};
+        this.dtm = new DefaultTableModel(null, titulos);
+        
+        String[] registro = new String[5];
+        
+        for (TipoProducto item : lista) {
+            registro[0] = Integer.toString(item.getIdTipo());
+            registro[1] = item.getCodigoTipo();
+            registro[2] = item.getNombreTipo();
+            registro[3] = item.getDescripcion();
+            registro[4] = item.isActivo() ? "Activo" : "Inactivo";
+            this.dtm.addRow(registro);
+        }
+        return this.dtm;
+    }
 
     /**
      * Inserta un nuevo tipo de producto con validaciones
      * @param codigo Código del tipo de producto
      * @param nombre Nombre del tipo de producto
      * @param descripcion Descripción del tipo de producto
+     * @param idTienda ID de la tienda
      * @return Mensaje de resultado
      */
-    public String insertar(String codigo, String nombre, String descripcion) {
+    public String insertar(String codigo, String nombre, String descripcion, Integer idTienda) {
         // Validaciones
         if (codigo.trim().length() == 0 || codigo.trim().length() > 20) {
             return "El código es obligatorio y debe tener máximo 20 caracteres";
@@ -73,6 +100,7 @@ public class TipoProductoNegocio {
         obj.setCodigoTipo(codigo.trim().toUpperCase());
         obj.setNombreTipo(nombre.trim());
         obj.setDescripcion(descripcion.trim());
+        obj.setIdTienda(idTienda);
         obj.setActivo(true);
         
         if (DATOS.insertar(obj)) {
@@ -88,10 +116,11 @@ public class TipoProductoNegocio {
      * @param codigo Código del tipo de producto
      * @param nombre Nombre del tipo de producto
      * @param descripcion Descripción del tipo de producto
+     * @param idTienda ID de la tienda
      * @param activo Estado del tipo de producto
      * @return Mensaje de resultado
      */
-    public String actualizar(int id, String codigo, String nombre, String descripcion, boolean activo) {
+    public String actualizar(int id, String codigo, String nombre, String descripcion, Integer idTienda, boolean activo) {
         // Validaciones
         if (codigo.trim().length() == 0 || codigo.trim().length() > 20) {
             return "El código es obligatorio y debe tener máximo 20 caracteres";
@@ -110,6 +139,7 @@ public class TipoProductoNegocio {
         obj.setCodigoTipo(codigo.trim().toUpperCase());
         obj.setNombreTipo(nombre.trim());
         obj.setDescripcion(descripcion.trim());
+        obj.setIdTienda(idTienda);
         obj.setActivo(activo);
         
         if (DATOS.actualizar(obj)) {

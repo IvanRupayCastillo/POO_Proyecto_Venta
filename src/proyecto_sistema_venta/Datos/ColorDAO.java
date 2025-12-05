@@ -40,6 +40,7 @@ public class ColorDAO implements IColor {
                     rs.getInt("id_color"),
                     rs.getString("codigo_color"),
                     rs.getString("nombre_color"),
+                    (Integer) rs.getObject("id_tienda"),
                     rs.getBoolean("activo")
                 ));
             }
@@ -54,17 +55,49 @@ public class ColorDAO implements IColor {
         }
         return lista;
     }
+    
+    public List<Color> listarPorTienda(String texto, int idTienda) {
+        List<Color> lista = new ArrayList<>();
+        try {
+            ps = CNX.conectar().prepareStatement(
+                "SELECT * FROM colores WHERE nombre_color LIKE ? AND id_tienda = ? ORDER BY nombre_color ASC"
+            );
+            ps.setString(1, "%" + texto + "%");
+            ps.setInt(2, idTienda);
+            rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                lista.add(new Color(
+                    rs.getInt("id_color"),
+                    rs.getString("codigo_color"),
+                    rs.getString("nombre_color"),
+                    rs.getInt("id_tienda"),
+                    rs.getBoolean("activo")
+                ));
+            }
+            ps.close();
+            rs.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al listar colores por tienda: " + e.getMessage());
+        } finally {
+            ps = null;
+            rs = null;
+            CNX.desconectar();
+        }
+        return lista;
+    }
 
     @Override
     public boolean insertar(Color obj) {
         resp = false;
         try {
             ps = CNX.conectar().prepareStatement(
-                "INSERT INTO colores (codigo_color, nombre_color, activo) VALUES (?,?,?)"
+                "INSERT INTO colores (codigo_color, nombre_color, id_tienda, activo) VALUES (?,?,?,?)"
             );
             ps.setString(1, obj.getCodigoColor());
             ps.setString(2, obj.getNombreColor());
-            ps.setBoolean(3, obj.isActivo());
+            ps.setObject(3, obj.getIdTienda());
+            ps.setBoolean(4, obj.isActivo());
             
             if (ps.executeUpdate() > 0) {
                 resp = true;
@@ -84,12 +117,13 @@ public class ColorDAO implements IColor {
         resp = false;
         try {
             ps = CNX.conectar().prepareStatement(
-                "UPDATE colores SET codigo_color=?, nombre_color=?, activo=? WHERE id_color=?"
+                "UPDATE colores SET codigo_color=?, nombre_color=?, id_tienda=?, activo=? WHERE id_color=?"
             );
             ps.setString(1, obj.getCodigoColor());
             ps.setString(2, obj.getNombreColor());
-            ps.setBoolean(3, obj.isActivo());
-            ps.setInt(4, obj.getIdColor());
+            ps.setObject(3, obj.getIdTienda());
+            ps.setBoolean(4, obj.isActivo());
+            ps.setInt(5, obj.getIdColor());
             
             if (ps.executeUpdate() > 0) {
                 resp = true;

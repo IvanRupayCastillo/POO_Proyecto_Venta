@@ -13,6 +13,7 @@ public class Talla {
     private String tipoTalla;  // ENUM: 'NUMERICA', 'LETRAS', 'ESPECIAL'
     private String nombreTalla;
     private int ordenVisualizacion;
+    private Integer idTienda;
     private boolean activo;
     private Timestamp createdAt;
     private Timestamp updatedAt;
@@ -22,21 +23,23 @@ public class Talla {
     }
 
     // Constructor sin timestamps (para inserción)
-    public Talla(int idTalla, String tipoTalla, String nombreTalla, int ordenVisualizacion, boolean activo) {
+    public Talla(int idTalla, String tipoTalla, String nombreTalla, int ordenVisualizacion, Integer idTienda, boolean activo) {
         this.idTalla = idTalla;
         this.tipoTalla = tipoTalla;
         this.nombreTalla = nombreTalla;
         this.ordenVisualizacion = ordenVisualizacion;
+        this.idTienda = idTienda;
         this.activo = activo;
     }
 
     // Constructor completo con timestamps
     public Talla(int idTalla, String tipoTalla, String nombreTalla, int ordenVisualizacion, 
-                boolean activo, Timestamp createdAt, Timestamp updatedAt) {
+                Integer idTienda, boolean activo, Timestamp createdAt, Timestamp updatedAt) {
         this.idTalla = idTalla;
         this.tipoTalla = tipoTalla;
         this.nombreTalla = nombreTalla;
         this.ordenVisualizacion = ordenVisualizacion;
+        this.idTienda = idTienda;
         this.activo = activo;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -73,6 +76,14 @@ public class Talla {
 
     public void setOrdenVisualizacion(int ordenVisualizacion) {
         this.ordenVisualizacion = ordenVisualizacion;
+    }
+
+    public Integer getIdTienda() {
+        return idTienda;
+    }
+
+    public void setIdTienda(Integer idTienda) {
+        this.idTienda = idTienda;
     }
 
     public boolean isActivo() {

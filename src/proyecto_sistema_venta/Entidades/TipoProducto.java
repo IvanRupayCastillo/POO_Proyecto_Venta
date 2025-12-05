@@ -13,6 +13,7 @@ public class TipoProducto {
     private String codigoTipo;
     private String nombreTipo;
     private String descripcion;
+    private Integer idTienda;
     private boolean activo;
     private Timestamp createdAt;
     private Timestamp updatedAt;
@@ -22,21 +23,23 @@ public class TipoProducto {
     }
 
     // Constructor sin timestamps (para inserción)
-    public TipoProducto(int idTipo, String codigoTipo, String nombreTipo, String descripcion, boolean activo) {
+    public TipoProducto(int idTipo, String codigoTipo, String nombreTipo, String descripcion, Integer idTienda, boolean activo) {
         this.idTipo = idTipo;
         this.codigoTipo = codigoTipo;
         this.nombreTipo = nombreTipo;
         this.descripcion = descripcion;
+        this.idTienda = idTienda;
         this.activo = activo;
     }
 
     // Constructor completo con timestamps
     public TipoProducto(int idTipo, String codigoTipo, String nombreTipo, String descripcion, 
-                       boolean activo, Timestamp createdAt, Timestamp updatedAt) {
+                       Integer idTienda, boolean activo, Timestamp createdAt, Timestamp updatedAt) {
         this.idTipo = idTipo;
         this.codigoTipo = codigoTipo;
         this.nombreTipo = nombreTipo;
         this.descripcion = descripcion;
+        this.idTienda = idTienda;
         this.activo = activo;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -73,6 +76,14 @@ public class TipoProducto {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    public Integer getIdTienda() {
+        return idTienda;
+    }
+
+    public void setIdTienda(Integer idTienda) {
+        this.idTienda = idTienda;
     }
 
     public boolean isActivo() {
