@@ -3,36 +3,49 @@ package proyecto_sistema_venta.Presentacion;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
+import java.time.LocalDate;
 import proyecto_sistema_venta.Conexion.Conexion;
 
 public class FrmKardex extends javax.swing.JInternalFrame {
 
-    private JTable tblKardex;
-    private JScrollPane jScrollPane1;
-    private JButton btnBuscar;
-    private JTextField txtBuscar;
-    private JLabel lblTotal;
-    private JLabel lblBuscar;
-    private JLabel lblTipo;
-    private JComboBox<String> cmbTipoMovimiento;
     private Conexion conexion;
 
     public FrmKardex() {
         conexion = new Conexion();
         initComponents();
-        cargarTiposMovimiento();
-        cargarKardex("");
+        inicializarFechas();
+        cargarCombos();
+        cargarKardex();
     }
 
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        jScrollPane1 = new JScrollPane();
-        tblKardex = new JTable();
-        btnBuscar = new JButton("Buscar");
-        txtBuscar = new JTextField();
-        lblTotal = new JLabel("Total de registros: 0");
-        lblBuscar = new JLabel("Buscar:");
-        lblTipo = new JLabel("Tipo:");
-        cmbTipoMovimiento = new JComboBox<>();
+
+        jPanel1 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
+        lblFechaDesde = new javax.swing.JLabel();
+        txtFechaDesde = new javax.swing.JTextField();
+        lblFechaHasta = new javax.swing.JLabel();
+        txtFechaHasta = new javax.swing.JTextField();
+        lblTienda = new javax.swing.JLabel();
+        cmbTienda = new javax.swing.JComboBox<>();
+        jPanel4 = new javax.swing.JPanel();
+        lblTipo = new javax.swing.JLabel();
+        cmbTipoMovimiento = new javax.swing.JComboBox<>();
+        lblEstado = new javax.swing.JLabel();
+        cmbEstado = new javax.swing.JComboBox<>();
+        lblUsuario = new javax.swing.JLabel();
+        cmbUsuario = new javax.swing.JComboBox<>();
+        jPanel5 = new javax.swing.JPanel();
+        lblBuscar = new javax.swing.JLabel();
+        txtBuscar = new javax.swing.JTextField();
+        btnBuscar = new javax.swing.JButton();
+        btnLimpiar = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblKardex = new javax.swing.JTable();
+        jPanel2 = new javax.swing.JPanel();
+        lblTotal = new javax.swing.JLabel();
 
         setClosable(true);
         setIconifiable(true);
@@ -40,11 +53,88 @@ public class FrmKardex extends javax.swing.JInternalFrame {
         setResizable(true);
         setTitle("Kardex - Movimientos de Almacén");
 
-        tblKardex.setModel(new DefaultTableModel(
-            new Object [][] {},
+        jPanel1.setLayout(new java.awt.GridLayout(3, 0));
+
+        jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        lblFechaDesde.setText("Fecha Desde:");
+        jPanel3.add(lblFechaDesde);
+
+        txtFechaDesde.setColumns(10);
+        txtFechaDesde.setToolTipText("Formato: YYYY-MM-DD");
+        jPanel3.add(txtFechaDesde);
+
+        lblFechaHasta.setText("Fecha Hasta:");
+        jPanel3.add(lblFechaHasta);
+
+        txtFechaHasta.setColumns(10);
+        txtFechaHasta.setToolTipText("Formato: YYYY-MM-DD");
+        jPanel3.add(txtFechaHasta);
+
+        lblTienda.setText("Tienda:");
+        jPanel3.add(lblTienda);
+
+        cmbTienda.setPreferredSize(new java.awt.Dimension(150, 22));
+        jPanel3.add(cmbTienda);
+
+        jPanel1.add(jPanel3);
+
+        jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        lblTipo.setText("Tipo Movimiento:");
+        jPanel4.add(lblTipo);
+
+        cmbTipoMovimiento.setPreferredSize(new java.awt.Dimension(150, 22));
+        jPanel4.add(cmbTipoMovimiento);
+
+        lblEstado.setText("Estado:");
+        jPanel4.add(lblEstado);
+
+        cmbEstado.setPreferredSize(new java.awt.Dimension(150, 22));
+        jPanel4.add(cmbEstado);
+
+        lblUsuario.setText("Usuario:");
+        jPanel4.add(lblUsuario);
+
+        cmbUsuario.setPreferredSize(new java.awt.Dimension(150, 22));
+        jPanel4.add(cmbUsuario);
+
+        jPanel1.add(jPanel4);
+
+        jPanel5.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        lblBuscar.setText("Buscar (Nro Doc):");
+        jPanel5.add(lblBuscar);
+
+        txtBuscar.setColumns(15);
+        jPanel5.add(txtBuscar);
+
+        btnBuscar.setText("Buscar");
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
+            }
+        });
+        jPanel5.add(btnBuscar);
+
+        btnLimpiar.setText("Limpiar Filtros");
+        btnLimpiar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLimpiarActionPerformed(evt);
+            }
+        });
+        jPanel5.add(btnLimpiar);
+
+        jPanel1.add(jPanel5);
+
+        getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
+
+        tblKardex.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
             new String [] {
-                "ID Mov", "Nro Doc", "Tipo Movimiento", "Tienda Origen", "Tienda Destino", 
-                "Fecha", "Hora", "Estado", "Monto Total", "Usuario"
+                "ID Mov", "Nro Doc", "Tipo Movimiento", "Tienda Origen", "Tienda Destino", "Fecha", "Hora", "Estado", "Monto Total", "Usuario"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -55,69 +145,73 @@ public class FrmKardex extends javax.swing.JInternalFrame {
                 return canEdit [columnIndex];
             }
         });
-        
         tblKardex.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tblKardexMouseClicked(evt);
             }
         });
-        
         jScrollPane1.setViewportView(tblKardex);
 
-        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBuscarActionPerformed(evt);
-            }
-        });
-        
-        cmbTipoMovimiento.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbTipoMovimientoActionPerformed(evt);
-            }
-        });
+        getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
-        GroupLayout layout = new GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 880, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblBuscar)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtBuscar, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lblTipo)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cmbTipoMovimiento, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnBuscar)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblTotal)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblBuscar)
-                    .addComponent(txtBuscar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblTipo)
-                    .addComponent(cmbTipoMovimiento, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnBuscar))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(lblTotal)
-                .addContainerGap())
-        );
+        jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        lblTotal.setText("Total de registros: 0");
+        jPanel2.add(lblTotal);
+
+        getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_END);
 
         pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        cargarKardex();
+    }//GEN-LAST:event_btnBuscarActionPerformed
+
+    private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
+        limpiarFiltros();
+    }//GEN-LAST:event_btnLimpiarActionPerformed
+
+    private void tblKardexMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblKardexMouseClicked
+        if (evt.getClickCount() == 2 && tblKardex.getSelectedRow() != -1) {
+            int idMovimiento = (int) tblKardex.getValueAt(tblKardex.getSelectedRow(), 0);
+            mostrarDetalle(idMovimiento);
+        }
+    }//GEN-LAST:event_tblKardexMouseClicked
+
+    private void inicializarFechas() {
+        // Establecer fecha desde: primer día del mes actual
+        LocalDate hoy = LocalDate.now();
+        LocalDate primerDiaMes = hoy.withDayOfMonth(1);
+        txtFechaDesde.setText(primerDiaMes.toString());
+        txtFechaHasta.setText(hoy.toString());
+    }
+
+    private void cargarCombos() {
+        cargarTiendas();
+        cargarTiposMovimiento();
+        cargarEstados();
+        cargarUsuarios();
+    }
+
+    private void cargarTiendas() {
+        cmbTienda.removeAllItems();
+        cmbTienda.addItem("TODAS");
+        
+        String sql = "SELECT nombre_tienda FROM tiendas WHERE activo = 1 ORDER BY nombre_tienda";
+        
+        try (Connection conn = conexion.conectar();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            
+            while (rs.next()) {
+                cmbTienda.addItem(rs.getString("nombre_tienda"));
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar tiendas: " + e.getMessage(), 
+                                        "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }
 
     private void cargarTiposMovimiento() {
@@ -140,7 +234,46 @@ public class FrmKardex extends javax.swing.JInternalFrame {
         }
     }
 
-    private void cargarKardex(String filtro) {
+    private void cargarEstados() {
+        cmbEstado.removeAllItems();
+        cmbEstado.addItem("TODOS");
+        cmbEstado.addItem("PENDIENTE");
+        cmbEstado.addItem("AUTORIZADO");
+        cmbEstado.addItem("CONFIRMADO");
+        cmbEstado.addItem("ANULADO");
+    }
+
+    private void cargarUsuarios() {
+        cmbUsuario.removeAllItems();
+        cmbUsuario.addItem("TODOS");
+        
+        String sql = "SELECT nombre_completo FROM usuarios WHERE activo = 1 ORDER BY nombre_completo";
+        
+        try (Connection conn = conexion.conectar();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            
+            while (rs.next()) {
+                cmbUsuario.addItem(rs.getString("nombre_completo"));
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar usuarios: " + e.getMessage(), 
+                                        "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+    private void limpiarFiltros() {
+        inicializarFechas();
+        txtBuscar.setText("");
+        cmbTienda.setSelectedIndex(0);
+        cmbTipoMovimiento.setSelectedIndex(0);
+        cmbEstado.setSelectedIndex(0);
+        cmbUsuario.setSelectedIndex(0);
+        cargarKardex();
+    }
+
+    private void cargarKardex() {
         DefaultTableModel model = (DefaultTableModel) tblKardex.getModel();
         model.setRowCount(0);
         
@@ -157,13 +290,37 @@ public class FrmKardex extends javax.swing.JInternalFrame {
         sql.append("INNER JOIN usuarios u ON m.id_usuario_registro = u.id_usuario ");
         sql.append("WHERE 1=1 ");
         
-        if (filtro != null && !filtro.trim().isEmpty()) {
-            sql.append("AND (m.numero_documento LIKE ? OR tm.nombre_tipo LIKE ? OR to1.nombre_tienda LIKE ?) ");
+        // Filtro por fechas (OBLIGATORIO)
+        sql.append("AND m.fecha_movimiento BETWEEN ? AND ? ");
+        
+        // Filtro por número de documento
+        String filtroDoc = txtBuscar.getText().trim();
+        if (!filtroDoc.isEmpty()) {
+            sql.append("AND m.numero_documento LIKE ? ");
         }
         
+        // Filtro por tienda
+        String tiendaSeleccionada = (String) cmbTienda.getSelectedItem();
+        if (tiendaSeleccionada != null && !tiendaSeleccionada.equals("TODAS")) {
+            sql.append("AND to1.nombre_tienda = ? ");
+        }
+        
+        // Filtro por tipo de movimiento
         String tipoSeleccionado = (String) cmbTipoMovimiento.getSelectedItem();
         if (tipoSeleccionado != null && !tipoSeleccionado.equals("TODOS")) {
             sql.append("AND tm.nombre_tipo = ? ");
+        }
+        
+        // Filtro por estado
+        String estadoSeleccionado = (String) cmbEstado.getSelectedItem();
+        if (estadoSeleccionado != null && !estadoSeleccionado.equals("TODOS")) {
+            sql.append("AND m.estado = ? ");
+        }
+        
+        // Filtro por usuario
+        String usuarioSeleccionado = (String) cmbUsuario.getSelectedItem();
+        if (usuarioSeleccionado != null && !usuarioSeleccionado.equals("TODOS")) {
+            sql.append("AND u.nombre_completo = ? ");
         }
         
         sql.append("ORDER BY m.fecha_movimiento DESC, m.hora_movimiento DESC");
@@ -172,15 +329,34 @@ public class FrmKardex extends javax.swing.JInternalFrame {
              PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
             
             int paramIndex = 1;
-            if (filtro != null && !filtro.trim().isEmpty()) {
-                String filtroLike = "%" + filtro + "%";
-                pstmt.setString(paramIndex++, filtroLike);
-                pstmt.setString(paramIndex++, filtroLike);
-                pstmt.setString(paramIndex++, filtroLike);
+            
+            // Parámetros de fecha (obligatorios)
+            pstmt.setString(paramIndex++, txtFechaDesde.getText());
+            pstmt.setString(paramIndex++, txtFechaHasta.getText());
+            
+            // Parámetro de número de documento
+            if (!filtroDoc.isEmpty()) {
+                pstmt.setString(paramIndex++, "%" + filtroDoc + "%");
             }
             
+            // Parámetro de tienda
+            if (tiendaSeleccionada != null && !tiendaSeleccionada.equals("TODAS")) {
+                pstmt.setString(paramIndex++, tiendaSeleccionada);
+            }
+            
+            // Parámetro de tipo de movimiento
             if (tipoSeleccionado != null && !tipoSeleccionado.equals("TODOS")) {
-                pstmt.setString(paramIndex, tipoSeleccionado);
+                pstmt.setString(paramIndex++, tipoSeleccionado);
+            }
+            
+            // Parámetro de estado
+            if (estadoSeleccionado != null && !estadoSeleccionado.equals("TODOS")) {
+                pstmt.setString(paramIndex++, estadoSeleccionado);
+            }
+            
+            // Parámetro de usuario
+            if (usuarioSeleccionado != null && !usuarioSeleccionado.equals("TODOS")) {
+                pstmt.setString(paramIndex++, usuarioSeleccionado);
             }
             
             ResultSet rs = pstmt.executeQuery();
@@ -208,21 +384,6 @@ public class FrmKardex extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(this, "Error al cargar kardex: " + e.getMessage(), 
                                         "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
-        }
-    }
-
-    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {
-        cargarKardex(txtBuscar.getText());
-    }
-
-    private void cmbTipoMovimientoActionPerformed(java.awt.event.ActionEvent evt) {
-        cargarKardex(txtBuscar.getText());
-    }
-
-    private void tblKardexMouseClicked(java.awt.event.MouseEvent evt) {
-        if (evt.getClickCount() == 2 && tblKardex.getSelectedRow() != -1) {
-            int idMovimiento = (int) tblKardex.getValueAt(tblKardex.getSelectedRow(), 0);
-            mostrarDetalle(idMovimiento);
         }
     }
 
@@ -273,11 +434,30 @@ public class FrmKardex extends javax.swing.JInternalFrame {
         }
     }
 
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FrmKardex().setVisible(true);
-            }
-        });
-    }
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBuscar;
+    private javax.swing.JButton btnLimpiar;
+    private javax.swing.JComboBox<String> cmbEstado;
+    private javax.swing.JComboBox<String> cmbTienda;
+    private javax.swing.JComboBox<String> cmbTipoMovimiento;
+    private javax.swing.JComboBox<String> cmbUsuario;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblBuscar;
+    private javax.swing.JLabel lblEstado;
+    private javax.swing.JLabel lblFechaDesde;
+    private javax.swing.JLabel lblFechaHasta;
+    private javax.swing.JLabel lblTienda;
+    private javax.swing.JLabel lblTipo;
+    private javax.swing.JLabel lblTotal;
+    private javax.swing.JLabel lblUsuario;
+    private javax.swing.JTable tblKardex;
+    private javax.swing.JTextField txtBuscar;
+    private javax.swing.JTextField txtFechaDesde;
+    private javax.swing.JTextField txtFechaHasta;
+    // End of variables declaration//GEN-END:variables
 }
