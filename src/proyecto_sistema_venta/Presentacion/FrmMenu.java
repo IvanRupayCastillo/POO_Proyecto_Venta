@@ -138,7 +138,7 @@ public class FrmMenu extends javax.swing.JFrame {
 
         jMenu5.setText("Salir");
         
-        MniSalir.setText("Salir del Sistema");
+        MniSalir.setText("Cerrar Sesión");
         MniSalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MniSalirActionPerformed(evt);
@@ -277,14 +277,28 @@ public class FrmMenu extends javax.swing.JFrame {
     private void MniSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MniSalirActionPerformed
         int respuesta = javax.swing.JOptionPane.showConfirmDialog(
             this,
-            "¿Está seguro que desea salir del sistema?",
-            "Confirmar Salida",
+            "¿Está seguro que desea cerrar sesión?",
+            "Cerrar Sesión",
             javax.swing.JOptionPane.YES_NO_OPTION,
             javax.swing.JOptionPane.QUESTION_MESSAGE
         );
         
         if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
-            System.exit(0);
+            // Cerrar sesión
+            SessionManager.getInstance().logout();
+            
+            // Cerrar todas las ventanas internas abiertas
+            javax.swing.JInternalFrame[] frames = desktopPane.getAllFrames();
+            for (javax.swing.JInternalFrame frame : frames) {
+                frame.dispose();
+            }
+            
+            // Cerrar el menú principal
+            this.dispose();
+            
+            // Abrir el formulario de login
+            FrmLogin login = new FrmLogin();
+            login.setVisible(true);
         }
     }//GEN-LAST:event_MniSalirActionPerformed
 

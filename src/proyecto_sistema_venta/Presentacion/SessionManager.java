@@ -1,17 +1,16 @@
 package proyecto_sistema_venta.Presentacion;
 
+import proyecto_sistema_venta.Entidades.Usuario;
+
 /**
  * Clase para gestionar la sesión del usuario actual.
- * Esta es una implementación básica que debe ser reemplazada por un sistema de autenticación completo.
  *
  * @author Sistema de Ventas
  */
 public class SessionManager {
 
     private static SessionManager instance;
-    private Integer currentUserId;
-    private Integer currentStoreId;
-    private String currentUserName;
+    private Usuario usuarioActual;
 
     private SessionManager() {
         // Constructor privado para patrón Singleton
@@ -25,75 +24,78 @@ public class SessionManager {
     }
 
     /**
-     * Simula el login de un usuario.
-     * En una implementación real, esto vendría de un formulario de login.
-     *
-     * @param userId ID del usuario
-     * @param storeId ID de la tienda asignada al usuario
-     * @param userName Nombre del usuario
+     * Inicia sesión con un usuario
      */
-    public void login(int userId, int storeId, String userName) {
-        this.currentUserId = userId;
-        this.currentStoreId = storeId;
-        this.currentUserName = userName;
-        System.out.println("DEBUG: Usuario logueado - ID: " + userId + ", Tienda: " + storeId + ", Nombre: " + userName);
+    public void login(Usuario usuario) {
+        this.usuarioActual = usuario;
+        System.out.println("DEBUG: Usuario logueado - " + usuario.getNombreCompleto());
     }
 
     /**
-     * Cierra la sesión del usuario actual.
+     * Cierra la sesión del usuario actual
      */
     public void logout() {
-        this.currentUserId = null;
-        this.currentStoreId = null;
-        this.currentUserName = null;
+        this.usuarioActual = null;
         System.out.println("DEBUG: Sesión cerrada");
     }
 
     /**
-     * Obtiene el ID del usuario actualmente logueado.
-     *
-     * @return ID del usuario o null si no hay sesión
+     * Obtiene el usuario actualmente logueado
+     */
+    public Usuario getUsuarioActual() {
+        return usuarioActual;
+    }
+
+    /**
+     * Obtiene el ID del usuario actualmente logueado
      */
     public Integer getCurrentUserId() {
-        return currentUserId;
+        return usuarioActual != null ? usuarioActual.getIdUsuario() : null;
     }
 
     /**
-     * Obtiene el ID de la tienda del usuario actualmente logueado.
-     *
-     * @return ID de la tienda o null si no hay sesión
+     * Obtiene el ID de la tienda del usuario actualmente logueado
      */
     public Integer getCurrentStoreId() {
-        return currentStoreId;
+        return usuarioActual != null ? usuarioActual.getIdTiendaAsignada() : null;
     }
 
     /**
-     * Obtiene el nombre del usuario actualmente logueado.
-     *
-     * @return Nombre del usuario o null si no hay sesión
+     * Obtiene el nombre del usuario actualmente logueado
      */
     public String getCurrentUserName() {
-        return currentUserName;
+        return usuarioActual != null ? usuarioActual.getNombreCompleto() : null;
     }
 
     /**
-     * Verifica si hay un usuario logueado.
-     *
-     * @return true si hay sesión activa, false en caso contrario
+     * Obtiene el rol del usuario actualmente logueado
+     */
+    public String getCurrentUserRole() {
+        return usuarioActual != null ? usuarioActual.getRol() : null;
+    }
+
+    /**
+     * Verifica si hay un usuario logueado
      */
     public boolean isLoggedIn() {
-        return currentUserId != null && currentStoreId != null;
+        return usuarioActual != null;
     }
 
     /**
-     * Método temporal para inicializar con valores por defecto.
-     * Esto debe ser reemplazado por el sistema de login real.
+     * Método temporal para inicializar con valores por defecto
+     * Esto debe ser reemplazado por el sistema de login real
      */
     public void initializeDefaultSession() {
-        // Valores por defecto para desarrollo - deben ser reemplazados por login real
-        this.currentUserId = 1; // Usuario por defecto
-        this.currentStoreId = 1; // Tienda por defecto
-        this.currentUserName = "Usuario Default";
+        Usuario usuarioDefault = new Usuario();
+        usuarioDefault.setIdUsuario(1);
+        usuarioDefault.setCodigoUsuario("ADMIN");
+        usuarioDefault.setNombreCompleto("Usuario Default");
+        usuarioDefault.setEmail("admin@sistema.com");
+        usuarioDefault.setRol("ADMIN");
+        usuarioDefault.setIdTiendaAsignada(1);
+        usuarioDefault.setActivo(true);
+        
+        this.usuarioActual = usuarioDefault;
         System.out.println("DEBUG: Sesión inicializada con valores por defecto");
     }
 }
