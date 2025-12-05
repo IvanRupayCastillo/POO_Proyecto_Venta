@@ -161,48 +161,88 @@ public class FrmMenu extends javax.swing.JFrame {
         FrmColor frmColor = new FrmColor();
         desktopPane.add(frmColor);
         frmColor.setVisible(true);
+        try {
+            frmColor.setMaximum(true);
+        } catch (java.beans.PropertyVetoException e) {
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_MniColorActionPerformed
 
     private void MniProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MniProductosActionPerformed
         FrmProductos frmProductos = new FrmProductos();
         desktopPane.add(frmProductos);
         frmProductos.setVisible(true);
+        try {
+            frmProductos.setMaximum(true);
+        } catch (java.beans.PropertyVetoException e) {
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_MniProductosActionPerformed
 
     private void MniTallaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MniTallaActionPerformed
         FrmTalla frmTalla = new FrmTalla();
         desktopPane.add(frmTalla);
         frmTalla.setVisible(true);
+        try {
+            frmTalla.setMaximum(true);
+        } catch (java.beans.PropertyVetoException e) {
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_MniTallaActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         FrmTipoProducto frmTipoProducto = new FrmTipoProducto();
         desktopPane.add(frmTipoProducto);
         frmTipoProducto.setVisible(true);
+        try {
+            frmTipoProducto.setMaximum(true);
+        } catch (java.beans.PropertyVetoException e) {
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void MniListarProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MniListarProductosActionPerformed
         FrmListarProductos frmListarProductos = new FrmListarProductos();
         desktopPane.add(frmListarProductos);
         frmListarProductos.setVisible(true);
+        try {
+            frmListarProductos.setMaximum(true);
+        } catch (java.beans.PropertyVetoException e) {
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_MniListarProductosActionPerformed
 
     private void MniRegistrarVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MniRegistrarVentaActionPerformed
         FrmRegistrarVenta frmRegistrarVenta = new FrmRegistrarVenta();
         desktopPane.add(frmRegistrarVenta);
         frmRegistrarVenta.setVisible(true);
+        try {
+            frmRegistrarVenta.setMaximum(true);
+        } catch (java.beans.PropertyVetoException e) {
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_MniRegistrarVentaActionPerformed
 
     private void MniTiendaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MniTiendaActionPerformed
         FrmTienda frmTienda = new FrmTienda();
         desktopPane.add(frmTienda);
         frmTienda.setVisible(true);
+        try {
+            frmTienda.setMaximum(true);
+        } catch (java.beans.PropertyVetoException e) {
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_MniTiendaActionPerformed
 
     private void MniKardexActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MniKardexActionPerformed
         FrmKardex frmKardex = new FrmKardex();
         desktopPane.add(frmKardex);
         frmKardex.setVisible(true);
+        try {
+            frmKardex.setMaximum(true);
+        } catch (java.beans.PropertyVetoException e) {
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_MniKardexActionPerformed
 
     /**
