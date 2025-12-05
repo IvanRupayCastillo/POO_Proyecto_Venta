@@ -1,20 +1,75 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
  */
-package poryecto_sistema_venta.Presentacion;
+package proyecto_sistema_venta.Presentacion;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import proyecto_sistema_venta.Entidades.Cliente;
+import proyecto_sistema_venta.Negocio.ClienteNegocio;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 /** 
  *
  * @author User
  */
-public class Frm_Selecionar_Cliente extends javax.swing.JInternalFrame {
+public class Frm_Selecionar_Cliente extends javax.swing.JDialog {
 
+    private final ClienteNegocio CONTROL;
+    private Cliente clienteSeleccionado;
+    
     /**
      * Creates new form Frm_Selecionar_Cliente
      */
-    public Frm_Selecionar_Cliente() {
+    public Frm_Selecionar_Cliente(JFrame parent, boolean modal) {
+        super(parent, modal);
         initComponents();
+        this.CONTROL = new ClienteNegocio();
+        this.clienteSeleccionado = null;
+        this.setLocationRelativeTo(null);
+        this.setTitle("Seleccionar Cliente");
+        
+        // Cargar todos los clientes al inicio
+        this.listar("");
+        
+        // Configurar búsqueda automática al escribir
+        configurarBusquedaAutomatica();
+    }
+    
+    /**
+     * Configura la búsqueda automática cuando se escriben 3 o más caracteres
+     */
+    private void configurarBusquedaAutomatica() {
+        TxtBuscar.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                String texto = TxtBuscar.getText().trim();
+                
+                // Buscar automáticamente si hay 3 o más caracteres
+                if (texto.length() >= 3) {
+                    listar(texto);
+                } else if (texto.length() == 0) {
+                    // Mostrar todos si se borra el texto
+                    listar("");
+                }
+            }
+        });
+    }
+    
+    /**
+     * Lista los clientes según el texto de búsqueda
+     */
+    private void listar(String texto) {
+        TblListadoCliente.setModel(this.CONTROL.listar(texto));
+    }
+    
+    /**
+     * Obtiene el cliente seleccionado
+     */
+    public Cliente getClienteSeleccionado() {
+        return this.clienteSeleccionado;
     }
     
 
@@ -39,11 +94,26 @@ public class Frm_Selecionar_Cliente extends javax.swing.JInternalFrame {
 
         jMenu1.setText("jMenu1");
 
-        jLabel1.setText("Nombre");
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Seleccionar Cliente");
+
+        jLabel1.setText("Buscar (Nombre o Documento):");
+
+        TxtBuscar.setToolTipText("Escriba al menos 3 caracteres para buscar");
 
         BtnBuscar.setText("Buscar");
+        BtnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtnBuscarActionPerformed(evt);
+            }
+        });
 
         BtnSeleccionar.setText("Seleccionar");
+        BtnSeleccionar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtnSeleccionarActionPerformed(evt);
+            }
+        });
 
         TblListadoCliente.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -106,6 +176,31 @@ public class Frm_Selecionar_Cliente extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+
+    private void BtnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnBuscarActionPerformed
+        this.listar(TxtBuscar.getText());
+    }//GEN-LAST:event_BtnBuscarActionPerformed
+
+    private void BtnSeleccionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnSeleccionarActionPerformed
+        if (TblListadoCliente.getSelectedRowCount() == 1) {
+            int fila = TblListadoCliente.getSelectedRow();
+            
+            // Crear objeto cliente con los datos de la fila seleccionada
+            clienteSeleccionado = new Cliente();
+            clienteSeleccionado.setId_cliente(Integer.parseInt(TblListadoCliente.getValueAt(fila, 0).toString()));
+            clienteSeleccionado.setTipo_documento(TblListadoCliente.getValueAt(fila, 1).toString());
+            clienteSeleccionado.setNumero_documento(TblListadoCliente.getValueAt(fila, 2).toString());
+            clienteSeleccionado.setRazon_social(TblListadoCliente.getValueAt(fila, 3).toString());
+            
+            // Cerrar el diálogo
+            this.dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, 
+                "Debe seleccionar un cliente de la tabla", 
+                "Advertencia", 
+                JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_BtnSeleccionarActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BtnBuscar;

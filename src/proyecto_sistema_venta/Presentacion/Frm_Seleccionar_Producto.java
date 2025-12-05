@@ -31,6 +31,9 @@ public class Frm_Seleccionar_Producto extends javax.swing.JDialog {
         this.listar("");
         this.primeraCarga=false;
         
+        // Configurar búsqueda automática
+        configurarBusquedaAutomatica();
+        
         this.setVisible(true);
     }
 
@@ -71,6 +74,11 @@ public class Frm_Seleccionar_Producto extends javax.swing.JDialog {
         });
 
         BtnSeleccionar.setText("Seleccionar");
+        BtnSeleccionar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtnSeleccionarActionPerformed(evt);
+            }
+        });
 
         TblListadoProducto.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -136,9 +144,113 @@ public class Frm_Seleccionar_Producto extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void BtnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnBuscarActionPerformed
-        //this.listar(TxtBuscarProducto.getText());
+        this.listar(TxtBuscarProducto.getText());
     }//GEN-LAST:event_BtnBuscarActionPerformed
 
+    private void BtnSeleccionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnSeleccionarActionPerformed
+        if (TblListadoProducto.getSelectedRowCount() == 1) {
+            // Obtener datos del producto seleccionado
+            // Columnas: ID(0), Código(1), Nombre(2), Descripción(3), Tipo(4), Color(5), Talla(6), 
+            //           P.Compra(7), P.VentaMayor(8), P.VentaMenor(9), StockMin(10), Estado(11)
+            int fila = TblListadoProducto.getSelectedRow();
+            int idProducto = Integer.parseInt(TblListadoProducto.getValueAt(fila, 0).toString());
+            String codigo = TblListadoProducto.getValueAt(fila, 1).toString();
+            String nombre = TblListadoProducto.getValueAt(fila, 2).toString();
+            
+            // Usar precio de venta menor (columna 9)
+            double precioVenta = Double.parseDouble(TblListadoProducto.getValueAt(fila, 9).toString());
+            
+            // Stock temporal (debería consultarse del inventario por tienda)
+            int stock = 100;
+            
+            // Solicitar cantidad
+            String cantidadStr = JOptionPane.showInputDialog(this, 
+                "Ingrese la cantidad a vender (Stock disponible: " + stock + "):", 
+                "Cantidad", 
+                JOptionPane.QUESTION_MESSAGE);
+            
+            if (cantidadStr != null && !cantidadStr.trim().isEmpty()) {
+                try {
+                    int cantidad = Integer.parseInt(cantidadStr.trim());
+                    
+                    // Validar cantidad
+                    if (cantidad <= 0) {
+                        JOptionPane.showMessageDialog(this, 
+                            "La cantidad debe ser mayor a cero", 
+                            "Error", 
+                            JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    
+                    if (cantidad > stock) {
+                        JOptionPane.showMessageDialog(this, 
+                            "La cantidad no puede ser mayor al stock disponible (" + stock + ")", 
+                            "Error", 
+                            JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    
+                    // Solicitar descuento (opcional)
+                    String descuentoStr = JOptionPane.showInputDialog(this, 
+                        "Ingrese el descuento para este producto (0 si no aplica):", 
+                        "Descuento", 
+                        JOptionPane.QUESTION_MESSAGE);
+                    
+                    double descuento = 0.0;
+                    if (descuentoStr != null && !descuentoStr.trim().isEmpty()) {
+                        try {
+                            descuento = Double.parseDouble(descuentoStr.trim());
+                            if (descuento < 0) {
+                                descuento = 0.0;
+                            }
+                        } catch (NumberFormatException e) {
+                            descuento = 0.0;
+                        }
+                    }
+                    
+                    // Calcular subtotal
+                    double subtotal = (cantidad * precioVenta) - descuento;
+                    
+                    // Agregar producto a la venta
+                    vista.agregarProducto(idProducto, codigo, nombre, stock, cantidad, precioVenta, descuento, subtotal);
+                    
+                    // Cerrar el diálogo
+                    this.dispose();
+                    
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this, 
+                        "Debe ingresar un número válido para la cantidad", 
+                        "Error", 
+                        JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, 
+                "Debe seleccionar un producto de la tabla", 
+                "Advertencia", 
+                JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_BtnSeleccionarActionPerformed
+
+    /**
+     * Configura la búsqueda automática cuando se escriben 3 o más caracteres
+     */
+    private void configurarBusquedaAutomatica() {
+        TxtBuscarProducto.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent e) {
+                String texto = TxtBuscarProducto.getText().trim();
+                
+                // Buscar automáticamente si hay 3 o más caracteres
+                if (texto.length() >= 3) {
+                    listar(texto);
+                } else if (texto.length() == 0) {
+                    // Mostrar todos si se borra el texto
+                    listar("");
+                }
+            }
+        });
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BtnBuscar;

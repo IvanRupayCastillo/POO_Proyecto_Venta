@@ -6,8 +6,14 @@ package proyecto_sistema_venta.Presentacion;
 
 import javax.swing.JFrame;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyAdapter;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
 import proyecto_sistema_venta.Entidades.Venta;
+import proyecto_sistema_venta.Entidades.Cliente;
 import proyecto_sistema_venta.Negocio.VentaNegocio;
+import proyecto_sistema_venta.Negocio.ClienteNegocio;
+import java.util.List;
  
 /**
  *
@@ -22,11 +28,14 @@ public class Frm_Venta extends javax.swing.JInternalFrame {
     
     private final VentaNegocio CONTROL;
     private final VentaNegocio doc;
+    private final ClienteNegocio clienteNegocio;
     private String accion;
     private Venta venta;
     private String resp;
     private int id_venta;
+    private int id_cliente_seleccionado = 0;
     private boolean primeraCarga = true;
+    private boolean actualizandoCombo = false;
     public JFrame contenedor; 
    
     
@@ -36,7 +45,10 @@ public class Frm_Venta extends javax.swing.JInternalFrame {
         this.contenedor=frmP;
         this.CONTROL = new VentaNegocio();
         this.doc = new VentaNegocio();
+        this.clienteNegocio = new ClienteNegocio();
         cargarTipoComprobante();
+        configurarBusquedaCliente();
+        inicializarTablaProductos();
         this.listar("");
         
         this.primeraCarga=false;
@@ -44,6 +56,58 @@ public class Frm_Venta extends javax.swing.JInternalFrame {
         this.accion="guardar";
         //this.crearDetalles();
         
+    }
+    
+    /**
+     * Configura el campo de búsqueda de cliente con autocompletado
+     */
+    private void configurarBusquedaCliente() {
+        // Hacer el campo TxtNombreMant editable para búsqueda
+        TxtNombreMant.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                String texto = TxtNombreMant.getText().trim();
+                
+                // Solo buscar si hay 3 o más caracteres
+                if (texto.length() >= 3) {
+                    buscarClientes(texto);
+                } else if (texto.length() == 0) {
+                    // Limpiar cuando se borra todo
+                    TxtId.setText("");
+                    id_cliente_seleccionado = 0;
+                }
+            }
+        });
+    }
+    
+    /**
+     * Busca clientes que coincidan con el texto ingresado
+     */
+    private void buscarClientes(String texto) {
+        try {
+            List<Cliente> clientes = clienteNegocio.seleccionar();
+            
+            // Filtrar clientes que contengan el texto en nombre o documento
+            List<Cliente> clientesFiltrados = new java.util.ArrayList<>();
+            for (Cliente c : clientes) {
+                String nombreCompleto = c.getRazon_social().toLowerCase();
+                String documento = c.getNumero_documento().toLowerCase();
+                String busqueda = texto.toLowerCase();
+                
+                if (nombreCompleto.contains(busqueda) || documento.contains(busqueda)) {
+                    clientesFiltrados.add(c);
+                }
+            }
+            
+            // Si hay resultados, mostrar en un diálogo de selección
+            if (!clientesFiltrados.isEmpty() && clientesFiltrados.size() <= 10) {
+                // Si hay pocos resultados, podemos mostrarlos automáticamente
+                // Por ahora, el usuario puede usar el botón "..." para ver la lista completa
+            }
+            
+        } catch (Exception ex) {
+            System.err.println("Error al buscar clientes: " + ex.getMessage());
+        }
     }
 
    
@@ -378,8 +442,17 @@ public class Frm_Venta extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_BtnNuevVentaActionPerformed
 
     private void BtnSeleccionarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnSeleccionarClienteActionPerformed
+        // Abrir diálogo de selección de cliente
+        Frm_Selecionar_Cliente frmSelCliente = new Frm_Selecionar_Cliente(contenedor, true);
+        frmSelCliente.setVisible(true);
         
-        
+        // Obtener el cliente seleccionado
+        if (frmSelCliente.getClienteSeleccionado() != null) {
+            Cliente cliente = frmSelCliente.getClienteSeleccionado();
+            TxtId.setText(String.valueOf(cliente.getId_cliente()));
+            TxtNombreMant.setText(cliente.getRazon_social());
+            id_cliente_seleccionado = cliente.getId_cliente();
+        }
     }//GEN-LAST:event_BtnSeleccionarClienteActionPerformed
 
     private void BtnVerProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnVerProductoActionPerformed
@@ -387,6 +460,126 @@ public class Frm_Venta extends javax.swing.JInternalFrame {
         frm.toFront();
     }//GEN-LAST:event_BtnVerProductoActionPerformed
 
+    private void BtnQuitarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnQuitarProductoActionPerformed
+        if (TblProducto.getSelectedRowCount() == 1) {
+            int fila = TblProducto.getSelectedRow();
+            String nombreProducto = TblProducto.getValueAt(fila, 2).toString();
+            
+            int respuesta = JOptionPane.showConfirmDialog(this, 
+                "¿Está seguro de quitar el producto '" + nombreProducto + "' de la venta?", 
+                "Confirmar", 
+                JOptionPane.YES_NO_OPTION);
+            
+            if (respuesta == JOptionPane.YES_OPTION) {
+                javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) TblProducto.getModel();
+                modelo.removeRow(fila);
+                calcularTotales();
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, 
+                "Debe seleccionar un producto de la tabla para quitar", 
+                "Advertencia", 
+                JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_BtnQuitarProductoActionPerformed
+
+    /**
+     * Agrega un producto a la tabla de detalle de venta
+     */
+    public void agregarProducto(int idProducto, String codigo, String nombre, int stock, 
+                                int cantidad, double precio, double descuento, double subtotal) {
+        // Obtener el modelo de la tabla
+        javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) TblProducto.getModel();
+        
+        // Verificar si el producto ya está en la tabla
+        boolean productoExiste = false;
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            int idExistente = Integer.parseInt(modelo.getValueAt(i, 0).toString());
+            if (idExistente == idProducto) {
+                // El producto ya existe, actualizar cantidad
+                int cantidadExistente = Integer.parseInt(modelo.getValueAt(i, 4).toString());
+                int nuevaCantidad = cantidadExistente + cantidad;
+                
+                // Validar que no exceda el stock
+                if (nuevaCantidad > stock) {
+                    JOptionPane.showMessageDialog(this, 
+                        "La cantidad total (" + nuevaCantidad + ") excede el stock disponible (" + stock + ")", 
+                        "Error", 
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                
+                // Actualizar la fila
+                double nuevoSubtotal = (nuevaCantidad * precio) - descuento;
+                modelo.setValueAt(nuevaCantidad, i, 4);
+                modelo.setValueAt(nuevoSubtotal, i, 7);
+                productoExiste = true;
+                break;
+            }
+        }
+        
+        // Si el producto no existe, agregarlo como nueva fila
+        if (!productoExiste) {
+            Object[] fila = new Object[8];
+            fila[0] = idProducto;
+            fila[1] = codigo;
+            fila[2] = nombre;
+            fila[3] = stock;
+            fila[4] = cantidad;
+            fila[5] = precio;
+            fila[6] = descuento;
+            fila[7] = subtotal;
+            modelo.addRow(fila);
+        }
+        
+        // Actualizar totales
+        calcularTotales();
+    }
+    
+    /**
+     * Calcula los totales de la venta
+     */
+    private void calcularTotales() {
+        javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) TblProducto.getModel();
+        double subtotal = 0.0;
+        
+        // Sumar todos los subtotales
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            double subtotalItem = Double.parseDouble(modelo.getValueAt(i, 7).toString());
+            subtotal += subtotalItem;
+        }
+        
+        // Calcular IGV
+        double igv = 0.18; // Por defecto 18%
+        try {
+            igv = Double.parseDouble(TxtIgv.getText());
+        } catch (NumberFormatException e) {
+            igv = 0.18;
+        }
+        
+        double totalImpuesto = subtotal * igv;
+        double total = subtotal + totalImpuesto;
+        
+        // Actualizar campos
+        TxtSubtotal.setText(String.format("%.2f", subtotal));
+        TxtTotalImpuesto.setText(String.format("%.2f", totalImpuesto));
+        TxtTotal.setText(String.format("%.2f", total));
+    }
+    
+    /**
+     * Inicializa la tabla de productos con el modelo correcto
+     */
+    private void inicializarTablaProductos() {
+        String[] columnas = {"ID", "CODIGO", "PRODUCTO", "STOCK", "CANTIDAD", "PRECIO", "DESCUENTO", "SUBTOTAL"};
+        javax.swing.table.DefaultTableModel modelo = new javax.swing.table.DefaultTableModel(null, columnas) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Solo permitir editar cantidad y descuento
+                return column == 4 || column == 6;
+            }
+        };
+        TblProducto.setModel(modelo);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BtnAnulaVenta;
