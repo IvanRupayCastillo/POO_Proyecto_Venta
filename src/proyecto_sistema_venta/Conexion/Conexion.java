@@ -25,7 +25,7 @@ public class Conexion {
             // Cargar el driver automáticamente
             Class.forName(DRIVER);
             this.cnx = DriverManager.getConnection(URL+DB, USER, PASSWORD);
-            JOptionPane.showMessageDialog(null, "Conexión exitosa a la base de datos");
+            // Conexión exitosa - no mostrar mensaje
         } catch (ClassNotFoundException e) {
             JOptionPane.showMessageDialog(null, "Error: Driver MySQL no encontrado\n" + e.getMessage());
             System.exit(0);
