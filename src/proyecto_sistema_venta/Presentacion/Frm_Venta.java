@@ -62,6 +62,10 @@ public class Frm_Venta extends javax.swing.JInternalFrame {
           configurarBusquedaCliente();
           inicializarTablaProductos();
           
+          // Configurar apariencia de las tablas con fuentes más grandes
+          UIConfig.configurarTabla(TblVenta);
+          UIConfig.configurarTabla(TblProducto);
+          
           // Configurar listener para cargar ventas cuando se muestre la pestaña
           TabVenta.addChangeListener(new javax.swing.event.ChangeListener() {
               public void stateChanged(javax.swing.event.ChangeEvent evt) {

@@ -1,5 +1,4 @@
 Manifest-Version: 1.0
-X-COMMENT: Main-Class will be added automatically by build
 Main-Class: proyecto_sistema_venta.Main
-Class-Path: ../mysql-connector-j-9.3.0.jar
+Class-Path: mysql-connector-j-9.3.0.jar
 

@@ -1,16 +1,13 @@
 package proyecto_sistema_venta;
 
 import proyecto_sistema_venta.Presentacion.FrmLogin;
+import proyecto_sistema_venta.Presentacion.UIConfig;
 import javax.swing.UIManager;
 
 public class Main {
     public static void main(String[] args) {
-        // Configurar Look and Feel del sistema
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // Configurar fuentes más grandes y apariencia mejorada
+        UIConfig.configurarFuentesGlobales();
         
         // Iniciar con el formulario de login
         java.awt.EventQueue.invokeLater(new Runnable() {
