@@ -219,4 +219,28 @@ public class VentaNegocio {
         } catch (IOException ignored) {
         }
     }
+
+    /**
+     * Lista todas las ventas, opcionalmente filtradas por texto de búsqueda
+     */
+    public javax.swing.table.TableModel listar(String texto) {
+        javax.swing.table.DefaultTableModel model = new javax.swing.table.DefaultTableModel();
+        model.addColumn("ID Venta");
+        model.addColumn("Fecha");
+        model.addColumn("Total");
+        model.addColumn("Método Pago");
+        // Stub - retorna tabla vacía para compilar
+        return model;
+    }
+
+    /**
+     * Lista los tipos de comprobante disponibles
+     */
+    public List<String> listarTipoComprobante() {
+        List<String> tipos = new ArrayList<>();
+        tipos.add("Boleta");
+        tipos.add("Factura");
+        tipos.add("Ticket");
+        return tipos;
+    }
 }

@@ -36,10 +36,12 @@ public class FrmMenu extends javax.swing.JFrame {
         MniTalla = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
         MniTienda = new javax.swing.JMenuItem();
+        MniCliente = new javax.swing.JMenuItem();
         MniKardex = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         jMenu4 = new javax.swing.JMenu();
         jMenu5 = new javax.swing.JMenu();
+        MniSalir = new javax.swing.JMenuItem();
         // New Tienda Menu
         MnuTienda = new javax.swing.JMenu();
         MniListarProductos = new javax.swing.JMenuItem();
@@ -50,6 +52,14 @@ public class FrmMenu extends javax.swing.JFrame {
 
         MniTipoProducto.setText("Procesos");
 
+        jMenuItem1.setText("Tipo Producto");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        MniTipoProducto.add(jMenuItem1);
+
         MniColor.setText("Color");
         MniColor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -57,14 +67,6 @@ public class FrmMenu extends javax.swing.JFrame {
             }
         });
         MniTipoProducto.add(MniColor);
-
-        MniProductos.setText("Productos");
-        MniProductos.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                MniProductosActionPerformed(evt);
-            }
-        });
-        MniTipoProducto.add(MniProductos);
 
         MniTalla.setText("Talla");
         MniTalla.addActionListener(new java.awt.event.ActionListener() {
@@ -74,13 +76,13 @@ public class FrmMenu extends javax.swing.JFrame {
         });
         MniTipoProducto.add(MniTalla);
 
-        jMenuItem1.setText("Tipo Producto");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        MniProductos.setText("Productos");
+        MniProductos.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                MniProductosActionPerformed(evt);
             }
         });
-        MniTipoProducto.add(jMenuItem1);
+        MniTipoProducto.add(MniProductos);
 
         MniTienda.setText("Tiendas");
         MniTienda.addActionListener(new java.awt.event.ActionListener() {
@@ -89,6 +91,14 @@ public class FrmMenu extends javax.swing.JFrame {
             }
         });
         MniTipoProducto.add(MniTienda);
+
+        MniCliente.setText("Clientes");
+        MniCliente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MniClienteActionPerformed(evt);
+            }
+        });
+        MniTipoProducto.add(MniCliente);
 
         MniKardex.setText("Kardex");
         MniKardex.addActionListener(new java.awt.event.ActionListener() {
@@ -128,6 +138,15 @@ public class FrmMenu extends javax.swing.JFrame {
         jMenuBar1.add(jMenu4);
 
         jMenu5.setText("Salir");
+        
+        MniSalir.setText("Salir del Sistema");
+        MniSalir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MniSalirActionPerformed(evt);
+            }
+        });
+        jMenu5.add(MniSalir);
+        
         jMenuBar1.add(jMenu5);
 
         setJMenuBar(jMenuBar1);
@@ -213,11 +232,11 @@ public class FrmMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_MniListarProductosActionPerformed
 
     private void MniRegistrarVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MniRegistrarVentaActionPerformed
-        FrmRegistrarVenta frmRegistrarVenta = new FrmRegistrarVenta();
-        desktopPane.add(frmRegistrarVenta);
-        frmRegistrarVenta.setVisible(true);
+        Frm_Venta frmVenta = new Frm_Venta(this);
+        desktopPane.add(frmVenta);
+        frmVenta.setVisible(true);
         try {
-            frmRegistrarVenta.setMaximum(true);
+            frmVenta.setMaximum(true);
         } catch (java.beans.PropertyVetoException e) {
             e.printStackTrace();
         }
@@ -244,6 +263,31 @@ public class FrmMenu extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }//GEN-LAST:event_MniKardexActionPerformed
+
+    private void MniClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MniClienteActionPerformed
+        Frm_Cliente frmCliente = new Frm_Cliente();
+        desktopPane.add(frmCliente);
+        frmCliente.setVisible(true);
+        try {
+            frmCliente.setMaximum(true);
+        } catch (java.beans.PropertyVetoException e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_MniClienteActionPerformed
+
+    private void MniSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MniSalirActionPerformed
+        int respuesta = javax.swing.JOptionPane.showConfirmDialog(
+            this,
+            "¿Está seguro que desea salir del sistema?",
+            "Confirmar Salida",
+            javax.swing.JOptionPane.YES_NO_OPTION,
+            javax.swing.JOptionPane.QUESTION_MESSAGE
+        );
+        
+        if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
+            System.exit(0);
+        }
+    }//GEN-LAST:event_MniSalirActionPerformed
 
     /**
      * @param args the command line arguments
@@ -282,10 +326,12 @@ public class FrmMenu extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem MniColor;
+    private javax.swing.JMenuItem MniCliente;
     private javax.swing.JMenuItem MniKardex;
     private javax.swing.JMenuItem MniListarProductos;
     private javax.swing.JMenuItem MniProductos;
     private javax.swing.JMenuItem MniRegistrarVenta;
+    private javax.swing.JMenuItem MniSalir;
     private javax.swing.JMenuItem MniTalla;
     private javax.swing.JMenuItem MniTienda;
     private javax.swing.JMenu MniTipoProducto;
